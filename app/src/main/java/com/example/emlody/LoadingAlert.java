@@ -2,6 +2,7 @@ package com.example.emlody;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 
 public class LoadingAlert {
@@ -23,4 +24,6 @@ public class LoadingAlert {
     void  closeAlertDialog(){
         dialog.dismiss();
     }
+
+
 }

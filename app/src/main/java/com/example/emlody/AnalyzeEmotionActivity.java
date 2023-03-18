@@ -1,19 +1,23 @@
 package com.example.emlody;
-import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.emlody.Utils.RealPathUtil;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.HttpStatus;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -29,23 +33,45 @@ import okhttp3.Response;
 
 public class AnalyzeEmotionActivity extends AppCompatActivity {
     private final int GALLERY_REQ_CODE = 1000;
+    ActivityResultLauncher<String> galleryImage;
+
+    FloatingActionButton galleryFloatingActionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analyze_emotion);
+        galleryImage =registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
+            @Override
+            public void onActivityResult(Uri result) {
+                selectFromGallery(result);
+            }
+        });
+        galleryFloatingActionButton=findViewById(R.id.floatingActionButton);
+        galleryFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                galleryImage.launch("image/*");
+            }
+        }
+
+        );
     }
 
-    public void choseImageFromGallery(View view) {
+    /*public void choseImageFromGallery(View view) {
         Intent iGallery = new Intent(Intent.ACTION_PICK);
         iGallery.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(iGallery, GALLERY_REQ_CODE);
-    }
+        launcher = registerForActivityResult
+                (ActivityResultContracts.StartActivityForResult()) {result ->
+                useTheResult(result)
+        }
+    }*/
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        boolean permission= ContextCompat.checkSelfPermission(AnalyzeEmotionActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED;
+
+    protected void selectFromGallery(Uri imageUri) {
+       // super.onActivityResult(requestCode, resultCode, data);
+      /*  boolean permission= ContextCompat.checkSelfPermission(AnalyzeEmotionActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED;
         if (resultCode == RESULT_OK) {
             if (requestCode == GALLERY_REQ_CODE) {
                 if(permission) {
@@ -55,17 +81,17 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
                         ActivityCompat.requestPermissions(AnalyzeEmotionActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                     }
                 }
-                else {
+                else {*/
                     LoadingAlert loadingAlert =new LoadingAlert(AnalyzeEmotionActivity.this);
                     loadingAlert.startAlertDialog();
                     Context context = AnalyzeEmotionActivity.this;
-                    String path = RealPathUtil.getRealPath(context,data.getData());
+                    String path = RealPathUtil.getRealPath(context,imageUri);
                     File file = new File(path);
                     uploadImageToServer(file, loadingAlert);
-                }
+
+         /*       }*/
             }
-        }
-    }
+
 private void uploadImageToServer( File file ,LoadingAlert loadingAlert){
     OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
@@ -88,8 +114,8 @@ private void uploadImageToServer( File file ,LoadingAlert loadingAlert){
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            loadingAlert.closeAlertDialog();
-                            Toast.makeText(AnalyzeEmotionActivity.this,"The image that you choose is not valid.\n Please try again.",Toast.LENGTH_LONG).show();
+                           loadingAlert.closeAlertDialog();
+                            Toast.makeText(AnalyzeEmotionActivity.this,"Something went wrong, please try again.",Toast.LENGTH_LONG).show();
 
                         }
                     });
@@ -97,8 +123,13 @@ private void uploadImageToServer( File file ,LoadingAlert loadingAlert){
                 @Override
                 public void onResponse(Call call, final Response response) throws IOException {
                     loadingAlert.closeAlertDialog();
-                    String res = response.body().string();
-                    System.out.println(res);
+                    if(response.code()== HttpStatus.SC_OK) {
+                        String res = response.body().string();
+                        System.out.println(res);
+                    } else if (response.code()== HttpStatus.SC_NOT_FOUND) {
+                        loadingAlert.closeAlertDialog();
+                        Toast.makeText(AnalyzeEmotionActivity.this,response.body().string(),Toast.LENGTH_LONG).show();
+                    }
 
                 }
             });
