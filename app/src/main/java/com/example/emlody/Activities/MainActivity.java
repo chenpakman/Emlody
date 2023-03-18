@@ -1,10 +1,12 @@
-package com.example.emlody;
+package com.example.emlody.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import com.example.emlody.R;
 
 public class MainActivity extends AppCompatActivity {
 

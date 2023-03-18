@@ -8,11 +8,11 @@ import android.view.LayoutInflater;
 public class LoadingAlert {
     private Activity activity;
     private AlertDialog dialog;
-    LoadingAlert(Activity activity){
+    public LoadingAlert(Activity activity){
         this.activity=activity;
 
     }
-    void startAlertDialog(){
+    public void startAlertDialog(){
         AlertDialog.Builder builder=new AlertDialog.Builder(activity);
         LayoutInflater inflater=activity.getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.dialog_layout,null));
@@ -21,7 +21,7 @@ public class LoadingAlert {
         dialog.show();
 
     }
-    void  closeAlertDialog(){
+   public void  closeAlertDialog(){
         dialog.dismiss();
     }
 

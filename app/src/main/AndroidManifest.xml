@@ -25,10 +25,10 @@
 
 
         <activity
-            android:name=".AnalyzeEmotionActivity"
+            android:name=".Activities.AnalyzeEmotionActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,6 +36,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+         <provider
+             android:authorities="com.example.emlody.fileProvider"
+             android:name="androidx.core.content.FileProvider"
+             android:exported="false"
+             android:grantUriPermissions="true">
+             <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                 android:resource="@xml/file_paths"/>
+         </provider>
     </application>
 
 </manifest>
