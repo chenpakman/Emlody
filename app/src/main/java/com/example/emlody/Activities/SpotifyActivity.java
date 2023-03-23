@@ -33,7 +33,6 @@ public class SpotifyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spotify);
-        // Initialize WebView
         webView = findViewById(R.id.spotifyWebView);
         webView.getSettings().setJavaScriptEnabled(true);
         CookieManager cookieManager = CookieManager.getInstance();
@@ -63,39 +62,29 @@ public class SpotifyActivity extends AppCompatActivity {
             }
         });
 
-
-
-        // Authenticate user and obtain access token
         authenticate();
     }
 
 
     private void authenticate() {
-        // Construct authorization URL
         String authorizationUrl = "https://accounts.spotify.com/authorize";
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("client_id", CLIENT_ID);
         queryParams.put("response_type", "token");
         queryParams.put("redirect_uri", REDIRECT_URI);
-     //   queryParams.put("scope", "playlist-read-private playlist-read-collaborative");
         String url = authorizationUrl + "?" + buildQueryString(queryParams);
 
-        // Load authorization URL in WebView
         webView.loadUrl(url);
     }
 
     private void handleRedirectUri(String redirectUri) {
-        // Parse access token from redirect URI
+
         Uri uri = Uri.parse(redirectUri);
         String accessToken = uri.getFragment().split("=")[1];
-
-        // Use access token to make authorized requests on behalf of the user
-        // Replace this with your own playlist URL
         Intent intent = getIntent();
         String playlistUrl =  intent.getStringExtra("EXTRA_MESSAGE");;
         String url = playlistUrl + "?access_token=" + accessToken;
 
-        // Load playlist URL in WebView
         webView.loadUrl(url);
     }
 
@@ -107,50 +96,8 @@ public class SpotifyActivity extends AppCompatActivity {
             sb.append(Uri.encode(entry.getValue()));
             sb.append("&");
         }
-        return sb.toString().substring(0, sb.length() - 1);
+        return sb.substring(0, sb.length() - 1);
     }
 }
 
-/*
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.webkit.WebView;
-import android.widget.Button;
-
-import com.example.emlody.R;
-
-
-public class SpotifyActivity extends AppCompatActivity {
-    WebView webView;
-    Button backButton;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_spotify);
-        webView = findViewById(R.id.spotifyWebView);
-        Intent intent = getIntent();
-        String message = intent.getStringExtra("EXTRA_MESSAGE");
-        webView.loadUrl(message);
-        webView.getSettings().setJavaScriptEnabled(true);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-}*/
