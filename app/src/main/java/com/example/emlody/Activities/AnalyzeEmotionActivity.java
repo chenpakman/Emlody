@@ -2,6 +2,7 @@ package com.example.emlody.Activities;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -12,13 +13,17 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.emlody.LoadingAlert;
 import com.example.emlody.R;
 import com.example.emlody.Utils.RealPathUtil;
+import com.example.emlody.Utils.ResponseServer;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,6 +68,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
 
 
     }
+
 private Uri createUri(){
         imageFile=new File(getApplicationContext().getFilesDir(),"camera_photo.jpg");
         return FileProvider.getUriForFile(
@@ -154,18 +160,26 @@ private void checkCameraPermissionsAndOpenCamera(){
                 }
 
                 @Override
-                public void onResponse(@NonNull Call call, final Response response) {
-                    runOnUiThread(() -> {
-                        loadingAlert.closeAlertDialog();
-                        try {
-                            Toast.makeText(AnalyzeEmotionActivity.this, response.body().string(), Toast.LENGTH_LONG).show();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                public void onResponse(@NonNull Call call, final Response response) throws IOException {
+                    if(response.body()!=null){
+                    String url = response.body().string();
+                    Gson gson = new Gson(); // Or use new GsonBuilder().create();
+                    ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
+                    if (response.code() == 200) {
+                        runOnUiThread(() -> {
+                            loadingAlert.closeAlertDialog();
+                            Intent intent = new Intent(AnalyzeEmotionActivity.this, SpotifyActivity.class);
+                            intent.putExtra("EXTRA_MESSAGE", serverResponse.getPlaylistUrl());
+                            startActivity(intent);
 
-                    });
+                        });
+                    }
+                    else{
+                        Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
+
+                    }
                 }
-            });
+            }});
 }
 }
 

@@ -1,0 +1,156 @@
+
+package com.example.emlody.Activities;
+import android.content.Intent;
+import android.net.Uri;
+import android.net.http.SslError;
+import android.os.Bundle;
+
+import android.webkit.CookieManager;
+import android.webkit.PermissionRequest;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.emlody.R;
+
+import java.net.HttpURLConnection;
+import java.util.HashMap;
+import java.util.Map;
+
+public class SpotifyActivity extends AppCompatActivity {
+
+    private static final String CLIENT_ID = "a7bff5059afb4b969966df56c651f6e8";
+    private static final String REDIRECT_URI = "https://www.google.com";
+
+    private WebView webView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_spotify);
+        // Initialize WebView
+        webView = findViewById(R.id.spotifyWebView);
+        webView.getSettings().setJavaScriptEnabled(true);
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                request.grant(request.getResources());
+            }
+        });
+
+
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+                if (url.startsWith(REDIRECT_URI)) {
+                    handleRedirectUri(url);
+                    return true;
+                }
+                return super.shouldOverrideUrlLoading(view, request);
+            }
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();
+            }
+        });
+
+
+
+        // Authenticate user and obtain access token
+        authenticate();
+    }
+
+
+    private void authenticate() {
+        // Construct authorization URL
+        String authorizationUrl = "https://accounts.spotify.com/authorize";
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("client_id", CLIENT_ID);
+        queryParams.put("response_type", "token");
+        queryParams.put("redirect_uri", REDIRECT_URI);
+     //   queryParams.put("scope", "playlist-read-private playlist-read-collaborative");
+        String url = authorizationUrl + "?" + buildQueryString(queryParams);
+
+        // Load authorization URL in WebView
+        webView.loadUrl(url);
+    }
+
+    private void handleRedirectUri(String redirectUri) {
+        // Parse access token from redirect URI
+        Uri uri = Uri.parse(redirectUri);
+        String accessToken = uri.getFragment().split("=")[1];
+
+        // Use access token to make authorized requests on behalf of the user
+        // Replace this with your own playlist URL
+        Intent intent = getIntent();
+        String playlistUrl =  intent.getStringExtra("EXTRA_MESSAGE");;
+        String url = playlistUrl + "?access_token=" + accessToken;
+
+        // Load playlist URL in WebView
+        webView.loadUrl(url);
+    }
+
+    private String buildQueryString(Map<String, String> params) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            sb.append(entry.getKey());
+            sb.append("=");
+            sb.append(Uri.encode(entry.getValue()));
+            sb.append("&");
+        }
+        return sb.toString().substring(0, sb.length() - 1);
+    }
+}
+
+/*
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.Button;
+
+import com.example.emlody.R;
+
+
+public class SpotifyActivity extends AppCompatActivity {
+    WebView webView;
+    Button backButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_spotify);
+        webView = findViewById(R.id.spotifyWebView);
+        Intent intent = getIntent();
+        String message = intent.getStringExtra("EXTRA_MESSAGE");
+        webView.loadUrl(message);
+        webView.getSettings().setJavaScriptEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+}*/
