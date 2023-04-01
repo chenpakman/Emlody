@@ -3,11 +3,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -59,7 +61,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         imageUri=createUri();
         registerPictureCameraLauncher();
         registerPictureGalleryLauncher();
-       cameraFloatingActionButton.setOnClickListener(v -> checkCameraPermissionsAndOpenCamera());
+        cameraFloatingActionButton.setOnClickListener(v -> checkCameraPermissionsAndOpenCamera());
         galleryFloatingActionButton.setOnClickListener(v -> {
             Intent iGallery = new Intent(Intent.ACTION_PICK);
             iGallery.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -145,7 +147,7 @@ private void checkCameraPermissionsAndOpenCamera(){
             .addFormDataPart("image", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
             .build();
     Request request = new Request.Builder()
-            .url("http://192.168.1.44:9000/app")
+            .url("http://192.168.1.219:9000/app")
             .post(requestBody)
             .build();
     okHttpClient.newCall(request)
@@ -158,7 +160,7 @@ private void checkCameraPermissionsAndOpenCamera(){
 
                     });
                 }
-
+                //TODO: ask the user to pick  the playlist
                 @Override
                 public void onResponse(@NonNull Call call, final Response response) throws IOException {
                     if(response.body()!=null){
@@ -168,19 +170,28 @@ private void checkCameraPermissionsAndOpenCamera(){
                     if (response.code() == 200) {
                         runOnUiThread(() -> {
                             loadingAlert.closeAlertDialog();
+                            showPlaylists(serverResponse);
                             Intent intent = new Intent(AnalyzeEmotionActivity.this, SpotifyActivity.class);
-                            intent.putExtra("EXTRA_MESSAGE", serverResponse.getPlaylistUrl());
-                            startActivity(intent);
 
+
+                            startActivity(intent);
                         });
                     }
                     else{
-                        Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
-
+                        runOnUiThread(() -> {
+                            loadingAlert.closeAlertDialog();
+                            Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
+                        });
                     }
                 }
             }});
-}
+    }
+
+    private void showPlaylists(ResponseServer serverRes) {
+        for (String playListURL:serverRes.getPlaylistsUrls().values()) {
+
+        }
+    }
 }
 
 
