@@ -24,10 +24,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
+                android:fontFamily="sans-serif"
                 android:text="@string/playlists_title"
-                app:layout_constraintsBottom_toBottomOf="parent"
-                app:layout_constraintsRight_toRightOf="parent"
-                app:layout_constraintsTop_toTopOf="parent" />
+                android:textAlignment="center"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -38,11 +38,16 @@
             android:id="@+id/playlistView">
         </WebView>
         <LinearLayout
-            android:id="@+id/chooseFrom"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
             android:orientation="horizontal">
+                <ListView
+                    android:id="@+id/chooseFrom"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent">
+
+                </ListView>
 
         </LinearLayout>
     </LinearLayout>

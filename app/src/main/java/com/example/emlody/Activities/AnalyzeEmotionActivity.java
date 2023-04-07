@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.emlody.LoadingAlert;
@@ -29,6 +30,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -160,24 +162,22 @@ private void checkCameraPermissionsAndOpenCamera(){
 
                     });
                 }
-                //TODO: ask the user to pick  the playlist
                 @Override
                 public void onResponse(@NonNull Call call, final Response response) throws IOException {
                     if(response.body()!=null){
                     String url = response.body().string();
                     Gson gson = new Gson(); // Or use new GsonBuilder().create();
-                    ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
+                    //ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
                     if (response.code() == 200) {
                         runOnUiThread(() -> {
                             loadingAlert.closeAlertDialog();
-                            showPlaylists(serverResponse);
-                            Intent intent = new Intent(AnalyzeEmotionActivity.this, SpotifyActivity.class);
-
-
+                            Intent intent = new Intent(AnalyzeEmotionActivity.this, PlaylistsActivity.class);
+                            intent.putExtra("EXTRA_MESSAGE", url);
                             startActivity(intent);
                         });
                     }
                     else{
+                        ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
                         runOnUiThread(() -> {
                             loadingAlert.closeAlertDialog();
                             Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
@@ -188,9 +188,13 @@ private void checkCameraPermissionsAndOpenCamera(){
     }
 
     private void showPlaylists(ResponseServer serverRes) {
-        for (String playListURL:serverRes.getPlaylistsUrls().values()) {
-
+        PlaylistsActivity playlistsActivity = new PlaylistsActivity();
+        Intent intent = new Intent(this, PlaylistsActivity.class);
+        intent.putExtra("EXTRA_MESSAGE", serverRes.getPlaylistUrl());
+        for (Map.Entry<String, String> playlist : serverRes.getPlaylistsUrls().entrySet()) {
+            playlistsActivity.addPlaylistIcon(playlist.getKey(), playlist.getValue());
         }
+        startActivity(intent);
     }
 }
 
