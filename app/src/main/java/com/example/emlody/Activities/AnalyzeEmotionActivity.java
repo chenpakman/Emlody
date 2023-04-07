@@ -1,25 +1,20 @@
 package com.example.emlody.Activities;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.MenuItem;
-import android.webkit.WebView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
 import com.example.emlody.LoadingAlert;
 import com.example.emlody.R;
@@ -41,6 +36,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
 
 public class AnalyzeEmotionActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_CODE=1;
@@ -165,24 +161,23 @@ private void checkCameraPermissionsAndOpenCamera(){
                 @Override
                 public void onResponse(@NonNull Call call, final Response response) throws IOException {
                     if(response.body()!=null){
-                    String url = response.body().string();
-                    Gson gson = new Gson(); // Or use new GsonBuilder().create();
-                    //ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
-                    if (response.code() == 200) {
-                        runOnUiThread(() -> {
-                            loadingAlert.closeAlertDialog();
-                            Intent intent = new Intent(AnalyzeEmotionActivity.this, PlaylistsActivity.class);
-                            intent.putExtra("EXTRA_MESSAGE", url);
-                            startActivity(intent);
-                        });
-                    }
-                    else{
-                        ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
-                        runOnUiThread(() -> {
-                            loadingAlert.closeAlertDialog();
-                            Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
-                        });
-                    }
+                        String url = response.body().string();
+                        if (response.code() == 200) {
+                            runOnUiThread(() -> {
+                                loadingAlert.closeAlertDialog();
+                                Intent intent = new Intent(AnalyzeEmotionActivity.this, PlaylistsActivity.class);
+                                intent.putExtra("EXTRA_MESSAGE", url);
+                                startActivity(intent);
+                            });
+                        }
+                        else{
+                            Gson gson = new Gson(); // Or use new GsonBuilder().create();
+                            ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
+                            runOnUiThread(() -> {
+                                loadingAlert.closeAlertDialog();
+                                Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
+                            });
+                        }
                 }
             }});
     }
@@ -192,7 +187,7 @@ private void checkCameraPermissionsAndOpenCamera(){
         Intent intent = new Intent(this, PlaylistsActivity.class);
         intent.putExtra("EXTRA_MESSAGE", serverRes.getPlaylistUrl());
         for (Map.Entry<String, String> playlist : serverRes.getPlaylistsUrls().entrySet()) {
-            playlistsActivity.addPlaylistIcon(playlist.getKey(), playlist.getValue());
+            //playlistsActivity.addPlaylistIcon(playlist.getKey(), playlist.getValue());
         }
         startActivity(intent);
     }
