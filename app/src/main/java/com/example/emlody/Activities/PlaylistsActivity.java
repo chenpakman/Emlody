@@ -12,7 +12,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -137,8 +136,7 @@ public class PlaylistsActivity extends AppCompatActivity {
     private void addPlaylistIcon(String mood , String playListUri) {
         SpotifyImageView spotifyImageView = new SpotifyImageView(this);
         spotifyImageView.setSpotifyUri(playListUri);
-        spotifyImageView.setImageResource(R.drawable.spotify);
-        spotifyImageView.setClickable(true);
+        spotifyImageView.setMood(mood);
         spotifyImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,9 +144,6 @@ public class PlaylistsActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         });
-        EditText moodText = new EditText(this);
-        moodText.setText(mood);
         this.playLists.addHeaderView(spotifyImageView);
-        this.playLists.addFooterView(moodText);
     }
 }
