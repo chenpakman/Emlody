@@ -1,11 +1,4 @@
 package com.example.emlody.Activities;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.content.Intent;
@@ -13,11 +6,17 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.MenuItem;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+
+import com.example.emlody.EmotionNotFoundDialog;
 import com.example.emlody.LoadingAlert;
 import com.example.emlody.R;
 import com.example.emlody.Utils.RealPathUtil;
@@ -27,6 +26,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -37,6 +37,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.BufferedSink;
+
 
 public class AnalyzeEmotionActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_CODE=1;
@@ -59,13 +61,12 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         imageUri=createUri();
         registerPictureCameraLauncher();
         registerPictureGalleryLauncher();
-       cameraFloatingActionButton.setOnClickListener(v -> checkCameraPermissionsAndOpenCamera());
+        cameraFloatingActionButton.setOnClickListener(v -> checkCameraPermissionsAndOpenCamera());
         galleryFloatingActionButton.setOnClickListener(v -> {
             Intent iGallery = new Intent(Intent.ACTION_PICK);
             iGallery.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             imageLauncher.launch("image/*");
         });
-
 
     }
 
@@ -145,7 +146,7 @@ private void checkCameraPermissionsAndOpenCamera(){
             .addFormDataPart("image", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
             .build();
     Request request = new Request.Builder()
-            .url("http://192.168.1.44:9000/app")
+            .url("http://192.168.1.218:9000/app")
             .post(requestBody)
             .build();
     okHttpClient.newCall(request)
@@ -158,29 +159,101 @@ private void checkCameraPermissionsAndOpenCamera(){
 
                     });
                 }
-
                 @Override
                 public void onResponse(@NonNull Call call, final Response response) throws IOException {
                     if(response.body()!=null){
-                    String url = response.body().string();
-                    Gson gson = new Gson(); // Or use new GsonBuilder().create();
-                    ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
-                    if (response.code() == 200) {
+                        String url = response.body().string();
+                        if (response.code() == 200) {
+                            runOnUiThread(() -> {
+                                loadingAlert.closeAlertDialog();
+                                Intent intent = new Intent(AnalyzeEmotionActivity.this, PlaylistsActivity.class);
+                                intent.putExtra("EXTRA_MESSAGE", url);
+                                startActivity(intent);
+                            });
+                        }
+                        else if(response.code() == 204) {
+                            runOnUiThread(() -> {
+                                loadingAlert.closeAlertDialog();
+                                EmotionNotFoundDialog dialog = new EmotionNotFoundDialog(AnalyzeEmotionActivity.this);
+                                dialog.show();
+                            });
+
+                        }
+                        else{
+                            Gson gson = new Gson(); // Or use new GsonBuilder().create();
+                            ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
+                            runOnUiThread(() -> {
+                                loadingAlert.closeAlertDialog();
+                                Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
+                            });
+                        }
+                }
+            }});
+    }
+
+    private void showPlaylists(ResponseServer serverRes) {
+        PlaylistsActivity playlistsActivity = new PlaylistsActivity();
+        Intent intent = new Intent(this, PlaylistsActivity.class);
+        intent.putExtra("EXTRA_MESSAGE", serverRes.getPlaylistUrl());
+        for (Map.Entry<String, String> playlist : serverRes.getPlaylistsUrls().entrySet()) {
+            //playlistsActivity.addPlaylistIcon(playlist.getKey(), playlist.getValue());
+        }
+        startActivity(intent);
+    }
+
+    public void requestPlayLists(String emotions) {
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://192.168.1.218:9000/app?emotions=" + emotions)
+                .put(new RequestBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public void writeTo(BufferedSink sink) throws IOException {
+
+                    }
+                })
+                .build();
+        okHttpClient.newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull final Call call, @NonNull IOException e) {
                         runOnUiThread(() -> {
-                            loadingAlert.closeAlertDialog();
-                            Intent intent = new Intent(AnalyzeEmotionActivity.this, SpotifyActivity.class);
-                            intent.putExtra("EXTRA_MESSAGE", serverResponse.getPlaylistUrl());
-                            startActivity(intent);
+                            Toast.makeText(AnalyzeEmotionActivity.this, "Something went wrong, please try again." + e.getMessage(), Toast.LENGTH_LONG).show();
 
                         });
                     }
-                    else{
-                        Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onResponse(@NonNull Call call, final Response response) throws IOException {
+                        if(response.body()!=null){
+                            String url = response.body().string();
+                            if (response.code() == 200) {
+                                runOnUiThread(() -> {
+                                    Intent intent = new Intent(AnalyzeEmotionActivity.this, PlaylistsActivity.class);
+                                    intent.putExtra("EXTRA_MESSAGE", url);
+                                    startActivity(intent);
+                                });
+                            }
+                            else{
+                                Gson gson = new Gson(); // Or use new GsonBuilder().create();
+                                ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
+                                runOnUiThread(() -> {
+                                    Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
+                                });
+                            }
+                        }
+                }}  );
+    }
 
-                    }
-                }
-            }});
-}
 }
 
 

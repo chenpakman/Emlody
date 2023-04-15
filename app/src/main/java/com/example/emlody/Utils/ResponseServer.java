@@ -1,6 +1,10 @@
 package com.example.emlody.Utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ResponseServer {
+    Map<String, String> playlistsUrls;
     String playlistUrl;
     String error;
     String emotion;
@@ -27,5 +31,17 @@ public class ResponseServer {
 
     public String getPlaylistUrl() {
         return playlistUrl;
+    }
+
+    public Map<String, String> getPlaylistsUrls() {
+        return playlistsUrls;
+    }
+
+    public void addPlaylistUrl(String emotion, String playlistUrl) {
+        if(null == this.playlistsUrls){
+            this.playlistsUrls = new HashMap<>();
+        }
+
+        this.playlistsUrls.put(emotion, playlistUrl);
     }
 }
