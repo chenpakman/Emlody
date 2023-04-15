@@ -108,11 +108,14 @@ public class PlaylistsActivity extends AppCompatActivity {
         String playlistsJson = getIntent().getStringExtra("EXTRA_MESSAGE");
         Gson gson = new Gson();
         ResponseServer res = gson.fromJson(playlistsJson, ResponseServer.class);
+        this.playList.clear();
+
         for (Map.Entry<String, String> entry: res.getPlaylistsUrls().entrySet()) {
             this.addPlaylistIcon(entry.getKey(), entry.getValue());
         }
+        this.adapter.notifyDataSetChanged();
 
-        String playlistUrl = res.getPlaylistsUrls().get(res.getEmotion());
+        String playlistUrl = res.getPlaylistUrl();
         String url = playlistUrl + "?access_token=" + this.accessToken;
         this.webView.loadUrl(url);
     }
