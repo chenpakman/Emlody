@@ -12,8 +12,11 @@ import androidx.annotation.NonNull;
 public class EmotionNotFoundDialog extends Dialog implements View.OnClickListener {
 
     private Context context;
+
     private Dialog dialog;
     private TextView tellText, goBackText;
+
+    private ChooseEmotionsDialog emotionsDialog;
 
     public EmotionNotFoundDialog(@NonNull Context context) {
         super(context);
@@ -28,7 +31,10 @@ public class EmotionNotFoundDialog extends Dialog implements View.OnClickListene
                 this.dismiss();
                 break;
             case R.id.okay_text:
-                //todo:show list of emotions to choose from
+                this.dismiss();
+                this.emotionsDialog = new ChooseEmotionsDialog(this.context);
+                emotionsDialog.show();
+                break;
         }
     }
 
@@ -42,4 +48,5 @@ public class EmotionNotFoundDialog extends Dialog implements View.OnClickListene
         tellText.setOnClickListener(this);
         goBackText.setOnClickListener(this);
     }
+
 }
