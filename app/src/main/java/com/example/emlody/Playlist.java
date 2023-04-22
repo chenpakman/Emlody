@@ -6,7 +6,7 @@ public class Playlist {
     String playlistUrl;
     public Playlist(int image,String playlistName,String playlistUrl){
         this.image=image;
-        this.playlistName=playlistName;
+        this.playlistName=playlistName + " Mix";
         this.playlistUrl=playlistUrl;
 
     }

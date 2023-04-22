@@ -14,10 +14,15 @@
         style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="15dp"
         android:layout_toRightOf="@id/image"
         android:text="playlist"
-        android:textColor="@color/black"
-       ></TextView>
+        android:textAlignment="center"
+        android:textColor="#165AE1"
+        android:padding="16dp"
+
+        >
+
+    </TextView>
 
 </RelativeLayout>
