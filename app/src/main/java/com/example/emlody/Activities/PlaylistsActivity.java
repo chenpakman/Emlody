@@ -1,12 +1,9 @@
 package com.example.emlody.Activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +15,6 @@ import com.example.emlody.Utils.ResponseServer;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class PlaylistsActivity extends AppCompatActivity {
@@ -47,6 +43,10 @@ public class PlaylistsActivity extends AppCompatActivity {
 
     }
 private void addPlaylists(ResponseServer res){
+    playlistsArray.clear();
+    playListAdapter.clear();
+    playListAdapter.notifyDataSetChanged();
+
     for (Map.Entry<String, String> entry: res.getPlaylistsUrls().entrySet()) {
         Playlist playlist=new Playlist(R.drawable.spotify,entry.getKey(),entry.getValue());
         playlistsArray.add(playlist);
@@ -62,7 +62,7 @@ private void addPlaylists(ResponseServer res){
 
     }
 
-
+    playListAdapter.notifyDataSetChanged();
 }
 
 
