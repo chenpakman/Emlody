@@ -43,13 +43,13 @@ import okio.BufferedSink;
 public class AnalyzeEmotionActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_CODE=1;
     private static final int GALLERY_REQ_CODE=1000;
-    ActivityResultLauncher<String> imageLauncher;
-    ActivityResultLauncher<Uri> cameraImageLauncher;
-    Uri imageUri;
-    ImageView imageView;
-    File imageFile;
-    FloatingActionButton galleryFloatingActionButton;
-    FloatingActionButton cameraFloatingActionButton;
+    private ActivityResultLauncher<String> imageLauncher;
+    private ActivityResultLauncher<Uri> cameraImageLauncher;
+    private Uri imageUri;
+    private ImageView imageView;
+    private File imageFile;
+    private FloatingActionButton galleryFloatingActionButton;
+    private FloatingActionButton cameraFloatingActionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +74,7 @@ private Uri createUri(){
         imageFile=new File(getApplicationContext().getFilesDir(),"camera_photo.jpg");
         return FileProvider.getUriForFile(
                 getApplicationContext(),
-                "com.example.emlody.fileProvider",
-                imageFile
+                "com.example.emlody.fileProvider", imageFile
         );
 }
 
@@ -145,7 +144,8 @@ private void checkCameraPermissionsAndOpenCamera(){
             .addFormDataPart("image", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
             .build();
     Request request = new Request.Builder()
-            .url("http://192.168.1.218:9000/app")
+            //.url("http://192.168.1.218:9000/app")
+            .url("http://192.168.1.34:9000/app")
             .post(requestBody)
             .build();
     okHttpClient.newCall(request)
@@ -190,15 +190,7 @@ private void checkCameraPermissionsAndOpenCamera(){
             }});
     }
 
-    private void showPlaylists(ResponseServer serverRes) {
-        PlaylistsActivity playlistsActivity = new PlaylistsActivity();
-        Intent intent = new Intent(this, PlaylistsActivity.class);
-        intent.putExtra("EXTRA_MESSAGE", serverRes.getPlaylistUrl());
-        for (Map.Entry<String, String> playlist : serverRes.getPlaylistsUrls().entrySet()) {
-            //playlistsActivity.addPlaylistIcon(playlist.getKey(), playlist.getValue());
-        }
-        startActivity(intent);
-    }
+
 
     public void requestPlayLists(String emotions) {
 

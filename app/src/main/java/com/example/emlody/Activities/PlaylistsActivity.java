@@ -21,8 +21,8 @@ public class PlaylistsActivity extends AppCompatActivity {
 
 
     private ListView playListsListView;
-    PlayListAdapter playListAdapter;
-    ArrayList<Playlist> playlistsArray;
+    private PlayListAdapter playListAdapter;
+    private ArrayList<Playlist> playlistsArray;
 
 
     @Override
