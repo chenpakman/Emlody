@@ -34,6 +34,7 @@ public class SpotifyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spotify);
         webView = findViewById(R.id.spotifyWebView);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         webView.getSettings().setJavaScriptEnabled(true);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);

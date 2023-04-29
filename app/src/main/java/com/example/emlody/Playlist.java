@@ -1,9 +1,9 @@
 package com.example.emlody;
 
 public class Playlist {
-    int image;
-    String playlistName;
-    String playlistUrl;
+    private int image;
+    private String playlistName;
+    private String playlistUrl;
     public Playlist(int image,String playlistName,String playlistUrl){
         this.image=image;
         this.playlistName=playlistName + " Mix";
