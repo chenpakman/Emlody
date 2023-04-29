@@ -3,44 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@drawable/background"
     android:layout_height="match_parent"
     tools:context=".Activities.MainActivity">
 
-    <TextView
-        android:id="@+id/EmlodyTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Emlody"
-        android:textColor="#2196F3"
-        android:textSize="60sp"
+    <ImageView
+        android:id="@+id/id_logo_imageView"
+        android:layout_width="256dp"
+        android:layout_height="179dp"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="For more visit www.materialuiux.com"
         app:layout_constraintBottom_toTopOf="@+id/GeneratePlaylistButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.413"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.52" />
+        app:srcCompat="@drawable/logo" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/GeneratePlaylistButton"
         android:layout_width="236dp"
         android:layout_height="86dp"
-        android:layout_marginBottom="248dp"
-        android:background="@drawable/custom_button"
+        android:layout_marginBottom="152dp"
+        android:background="@drawable/bg_rounded"
         android:onClick="generatePlaylistButtonClicked"
         android:text="Generate Playlist!"
         android:textAlignment="center"
+        android:textAllCaps="false"
         android:textColor="#FFF"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="84dp"
-        android:layout_height="86dp"
-        app:layout_constraintBottom_toBottomOf="@+id/EmlodyTextView"
-        app:layout_constraintStart_toEndOf="@+id/EmlodyTextView"
-        app:layout_constraintTop_toTopOf="@+id/EmlodyTextView"
-        app:srcCompat="@mipmap/music_icon_foreground" />
 </androidx.constraintlayout.widget.ConstraintLayout>
