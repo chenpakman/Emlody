@@ -55,6 +55,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analyze_emotion);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         cameraFloatingActionButton=findViewById(R.id.cameraFloatingActionButton);
         galleryFloatingActionButton=findViewById(R.id.floatingActionButton);
         imageView=findViewById(R.id.choosenImageView);

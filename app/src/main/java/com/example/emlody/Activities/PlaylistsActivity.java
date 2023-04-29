@@ -30,6 +30,7 @@ public class PlaylistsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlists);
         playListsListView=findViewById(R.id.listView);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         playlistsArray =new ArrayList<>();
 
         String playlistsJson = getIntent().getStringExtra("EXTRA_MESSAGE");
