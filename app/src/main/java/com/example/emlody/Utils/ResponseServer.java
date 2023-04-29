@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ResponseServer {
-    Map<String, String> playlistsUrls;
-    String playlistUrl;
-    String error;
-    String emotion;
+   private Map<String, String> playlistsUrls;
+   private String playlistUrl;
+   private String error;
+   private String emotion;
 
     public void setEmotion(String emotion) {
         this.emotion = emotion;
