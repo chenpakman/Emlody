@@ -24,7 +24,7 @@
         android:layout_width="236dp"
         android:layout_height="86dp"
         android:layout_marginBottom="152dp"
-        android:background="@drawable/bg_rounded"
+        android:background="@drawable/button"
         android:onClick="generatePlaylistButtonClicked"
         android:text="Generate Playlist!"
         android:textAlignment="center"
