@@ -42,7 +42,7 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
 
-        android:layout_marginTop="184dp"
+        android:layout_marginTop="144dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,13 +84,13 @@
 
     <TextView
         android:id="@+id/vibesTextView"
-        android:layout_width="404dp"
-        android:layout_height="152dp"
+        android:layout_width="345dp"
+        android:layout_height="128dp"
         android:text="Capture the vibes, feel the energy, and let the tunes work their magic!"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#FFF"
-        android:textSize="30dp"
+        android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/choosenImageView"
         app:layout_constraintEnd_toEndOf="parent"

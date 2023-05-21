@@ -251,12 +251,14 @@ private void registerPictureCameraLauncher(){
 private void registerPictureGalleryLauncher(){
     imageLauncher =registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
         String path=RealPathUtil.getRealPath(AnalyzeEmotionActivity.this,result);
+        reorderUi(result);
         imageFile=new File(path);
         selectFromGallery();
-        reorderUi(result);
     });
 }
 private void reorderUi(Uri imageUri){
+  imageView.setImageURI(imageUri);
+
     title.animate().alpha(1f).y(100);
     cameraFloatingActionButton.animate().alpha(1f).y(1960);
     galleryFloatingActionButton.animate().alpha(1f).y(1710);
