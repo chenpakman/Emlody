@@ -128,59 +128,6 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     };
 
 
-   /* private void measureHeartRate(GoogleSignInAccount googleSignInAccount){
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestScopes(new Scope(Fitness.SCOPE_BODY_READ))
-                .build();
-
-
-        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Fitness.SENSORS_API)
-                .addApi(Fitness.CONFIG_API)
-                .addApi(Fitness.HISTORY_API)
-                .addScope(new Scope(Fitness.SCOPE_BODY_READ))
-                .addConnectionCallbacks(connectionCallbacks)
-                .addOnConnectionFailedListener(connectionFailedListener)
-                .build();
-        googleApiClient.connect();
-
-        // Obtain a reference to the SensorsClient
-    SensorsClient sensorsClient = Fitness.getSensorsClient(this, googleSignInAccount);
-
-// Create a SensorRequest for the heart rate sensor
-    SensorRequest sensorRequest = new SensorRequest.Builder()
-            .setDataType(DataType.TYPE_HEART_RATE_BPM)
-            .setSamplingRate(5, TimeUnit.SECONDS) // Specify the desired sampling rate
-            .build();
-
-// Register the sensor listener with the sensor request
-    sensorsClient.add(sensorRequest, new OnDataPointListener() {
-                @Override
-                public void onDataPoint(@NonNull DataPoint dataPoint) {
-                    System.out.println("outttttt");
-                    for (Field field : dataPoint.getDataType().getFields()) {
-                        Value value = dataPoint.getValue(field);
-                        // Process the sensor data here
-                        System.out.println("Received sensor data: " + field.getName() + " = " + value);
-                    }
-                }
-            })
-            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    System.out.println("heeeeeeere"+unused);
-                }
-            })
-            .addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    System.out.println("Heart rate sensor listener registered successfully "+task.getResult());
-                } else {
-                    System.out.println("Failed to register heart rate sensor listener"+task.getException());
-                }
-            });
-
-}*/
     private void accessGoogleFit(FitnessOptions fitnessOptions, GoogleSignInAccount account) {
 
 

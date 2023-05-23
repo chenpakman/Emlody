@@ -18,7 +18,7 @@
         android:layout_toRightOf="@id/image"
         android:text="playlist"
         android:textAlignment="center"
-        android:textColor="#165AE1"
+        android:textColor="#F5F6F8"
         android:padding="16dp"
 
         >
