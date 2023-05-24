@@ -9,15 +9,17 @@
 
     <ImageView
         android:id="@+id/id_logo_imageView"
-        android:layout_width="256dp"
-        android:layout_height="179dp"
+        android:layout_width="269dp"
+        android:layout_height="224dp"
         android:layout_centerHorizontal="true"
         android:contentDescription="For more visit www.materialuiux.com"
         app:layout_constraintBottom_toTopOf="@+id/GeneratePlaylistButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo" />
+        app:layout_constraintVertical_bias="0.404"
+        app:srcCompat="@drawable/moodio_logo" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/GeneratePlaylistButton"
