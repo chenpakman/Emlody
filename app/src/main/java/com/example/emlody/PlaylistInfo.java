@@ -1,10 +1,10 @@
 package com.example.emlody;
 
-public class Playlist {
-    private int image;
+public class PlaylistInfo {
+    private String image;
     private String playlistName;
     private String playlistUrl;
-    public Playlist(int image,String playlistName,String playlistUrl){
+    public PlaylistInfo(String image, String playlistName, String playlistUrl){
         this.image=image;
         this.playlistName=playlistName + " Mix";
         this.playlistUrl=playlistUrl;
@@ -15,7 +15,7 @@ public class Playlist {
         return playlistUrl;
     }
 
-    public int getImage() {
+    public String  getImage() {
         return image;
     }
 
@@ -23,7 +23,7 @@ public class Playlist {
         return playlistName;
     }
 
-    public void setImage(int image) {
+    public void setImage(String image) {
         this.image = image;
     }
 

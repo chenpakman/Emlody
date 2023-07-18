@@ -1,6 +1,7 @@
 
 package com.example.emlody.Activities;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ public class SpotifyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spotify);
+        getWindow().setStatusBarColor(Color.BLACK);
         webView = findViewById(R.id.spotifyWebView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         webView.getSettings().setJavaScriptEnabled(true);
