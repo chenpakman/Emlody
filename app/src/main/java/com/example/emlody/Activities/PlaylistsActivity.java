@@ -1,20 +1,24 @@
 package com.example.emlody.Activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.emlody.PlayListAdapter;
-import com.example.emlody.Playlist;
+import com.example.emlody.PlaylistInfo;
 import com.example.emlody.R;
+import com.example.emlody.Utils.Playlist;
 import com.example.emlody.Utils.ResponseServer;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 public class PlaylistsActivity extends AppCompatActivity {
@@ -22,13 +26,14 @@ public class PlaylistsActivity extends AppCompatActivity {
 
     private ListView playListsListView;
     private PlayListAdapter playListAdapter;
-    private ArrayList<Playlist> playlistsArray;
+    private ArrayList<PlaylistInfo> playlistsArray;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlists);
+        getWindow().setStatusBarColor(Color.BLACK);
         playListsListView=findViewById(R.id.listView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         playlistsArray =new ArrayList<>();
@@ -36,6 +41,8 @@ public class PlaylistsActivity extends AppCompatActivity {
         String playlistsJson = getIntent().getStringExtra("EXTRA_MESSAGE");
         Gson gson = new Gson();
         ResponseServer res = gson.fromJson(playlistsJson, ResponseServer.class);
+        TextView title =findViewById(R.id.playlistTitle);
+        title.setText("The detected emotion is "+ res.getEmotion().toLowerCase(Locale.ROOT)+"\n Here are your playlists:\n");
         playListAdapter=new PlayListAdapter(this,R.layout.list_row,playlistsArray);
         playListsListView.setAdapter(playListAdapter);
 
@@ -48,8 +55,8 @@ private void addPlaylists(ResponseServer res){
     playListAdapter.clear();
     playListAdapter.notifyDataSetChanged();
 
-    for (Map.Entry<String, String> entry: res.getPlaylistsUrls().entrySet()) {
-        Playlist playlist=new Playlist(R.drawable.spotify,entry.getKey(),entry.getValue());
+    for (Map.Entry<String, Playlist> entry: res.getPlaylistsUrls().entrySet()) {
+        PlaylistInfo playlist=new PlaylistInfo(entry.getValue().getImageUrl(),entry.getKey(),entry.getValue().getPlaylistUrl());
         playlistsArray.add(playlist);
         playListsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -65,6 +72,7 @@ private void addPlaylists(ResponseServer res){
 
     playListAdapter.notifyDataSetChanged();
 }
+
 
 
 

@@ -1,11 +1,14 @@
 package com.example.emlody.Activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -29,14 +32,19 @@ import com.example.emlody.Utils.RealPathUtil;
 import com.example.emlody.Utils.ResponseServer;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
 import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataSource;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
+import com.google.android.gms.fitness.request.DataSourcesRequest;
+import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -74,6 +82,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analyze_emotion);
+        getWindow().setStatusBarColor(Color.BLACK);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         checkForPermission();
         cameraFloatingActionButton=findViewById(R.id.cameraFloatingActionButton);
@@ -101,9 +110,11 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
                     account,
                     fitnessOptions);
         } else {
-          // accessGoogleFit(fitnessOptions,account);
+          //accessGoogleFit(fitnessOptions,account);
             //measureHeartRate(account);
         }
+
+
         cameraFloatingActionButton.setOnClickListener(v -> checkCameraPermissionsAndOpenCamera());
         galleryFloatingActionButton.setOnClickListener(v -> {
             Intent iGallery = new Intent(Intent.ACTION_PICK);
@@ -112,6 +123,8 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         });
 
     }
+
+
     private SensorEventListener sensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
@@ -126,7 +139,31 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
             // Handle accuracy changes if needed
         }
     };
+private void checkForSensors()
+{
+    FitnessOptions fitnessOptions = FitnessOptions.builder().addDataType(DataType.TYPE_STEP_COUNT_DELTA).build();
 
+// Note: Fitness.SensorsApi.findDataSources() requires the
+// ACCESS_FINE_LOCATION permission.
+    Fitness.getSensorsClient(getApplicationContext(), GoogleSignIn.getAccountForExtension(getApplicationContext(), fitnessOptions))
+            .findDataSources(
+                    new DataSourcesRequest.Builder()
+                            .setDataTypes(DataType.TYPE_STEP_COUNT_DELTA)
+                            .setDataSourceTypes(DataSource.TYPE_RAW)
+                            .build())
+            .addOnSuccessListener(dataSources -> {
+                dataSources.forEach(dataSource -> {
+                    System.out.println("Data source found: ${it.streamIdentifier}");
+                    System.out.println("Data Source type: ${it.dataType.name}");
+
+                    if (dataSource.getDataType() == DataType.TYPE_STEP_COUNT_DELTA) {
+                        System.out.println( "Data source for STEP_COUNT_DELTA found!");
+
+                    }
+                });})
+            .addOnFailureListener(e ->
+                    System.out.println("Find data sources request failed"+ e.getMessage()));
+}
 
     private void accessGoogleFit(FitnessOptions fitnessOptions, GoogleSignInAccount account) {
 
@@ -151,9 +188,6 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
                     )
                     .addOnFailureListener( e -> System.out.println("error!"+e));
                  }
-
-
-
     }
 
 
@@ -317,14 +351,13 @@ private void checkCameraPermissionsAndOpenCamera(){
     }
 
 
+
 private void buttonAnimation(){
     for (Button b:buttonList) {
         b.setAlpha(0f);
         b.setTranslationY(1000);
         b.animate().alpha(1f).translationYBy(-1000).setDuration(1500);
     }
-
-
 }
     public void requestPlayLists(String emotions) {
 
