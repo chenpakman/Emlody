@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.emlody'
+    namespace 'com.example.moodio'
     compileSdk 33
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
-        applicationId "com.example.emlody"
+        applicationId "com.example.moodio"
         minSdk 24
         targetSdk 33
         versionCode 1

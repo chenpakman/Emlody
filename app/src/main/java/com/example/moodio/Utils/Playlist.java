@@ -1,4 +1,4 @@
-package com.example.emlody.Utils;
+package com.example.moodio.Utils;
 
 public class Playlist {
     String playlistUrl;

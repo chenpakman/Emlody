@@ -1,5 +1,5 @@
 
-package com.example.emlody.Activities;
+package com.example.moodio.Activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -11,15 +11,13 @@ import android.webkit.PermissionRequest;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.emlody.R;
+import com.example.moodio.R;
 
-import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 

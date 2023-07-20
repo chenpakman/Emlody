@@ -1,4 +1,4 @@
-package com.example.emlody;
+package com.example.moodio;
 
 import org.junit.Test;
 

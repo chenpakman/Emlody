@@ -24,7 +24,7 @@
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Emlody"
+        android:theme="@style/Theme.Moodio"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
@@ -51,7 +51,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.emlody.fileProvider"
+            android:authorities="com.example.moodio.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

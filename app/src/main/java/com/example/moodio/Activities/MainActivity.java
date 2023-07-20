@@ -1,15 +1,13 @@
-package com.example.emlody.Activities;
+package com.example.moodio.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 
-import com.example.emlody.R;
+import com.example.moodio.R;
 
 public class MainActivity extends AppCompatActivity {
 

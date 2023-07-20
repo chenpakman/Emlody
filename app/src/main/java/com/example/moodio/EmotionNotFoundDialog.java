@@ -1,4 +1,4 @@
-package com.example.emlody;
+package com.example.moodio;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.example.emlody.Activities.AnalyzeEmotionActivity;
+import com.example.moodio.Activities.AnalyzeEmotionActivity;
 
 import java.util.ArrayList;
 import java.util.List;

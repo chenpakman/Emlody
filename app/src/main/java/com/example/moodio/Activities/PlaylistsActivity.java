@@ -1,4 +1,4 @@
-package com.example.emlody.Activities;
+package com.example.moodio.Activities;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,11 +10,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.emlody.PlayListAdapter;
-import com.example.emlody.PlaylistInfo;
-import com.example.emlody.R;
-import com.example.emlody.Utils.Playlist;
-import com.example.emlody.Utils.ResponseServer;
+import com.example.moodio.PlayListAdapter;
+import com.example.moodio.PlaylistInfo;
+import com.example.moodio.R;
+import com.example.moodio.Utils.Playlist;
+import com.example.moodio.Utils.ResponseServer;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;

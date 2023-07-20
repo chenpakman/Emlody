@@ -1,4 +1,4 @@
-package com.example.emlody;
+package com.example.moodio;
 
 public class PlaylistInfo {
     private String image;

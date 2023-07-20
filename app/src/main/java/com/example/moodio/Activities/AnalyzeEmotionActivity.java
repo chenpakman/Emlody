@@ -1,14 +1,12 @@
-package com.example.emlody.Activities;
+package com.example.moodio.Activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -25,15 +23,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.example.emlody.EmotionNotFoundDialog;
-import com.example.emlody.LoadingAlert;
-import com.example.emlody.R;
-import com.example.emlody.Utils.RealPathUtil;
-import com.example.emlody.Utils.ResponseServer;
+import com.example.moodio.EmotionNotFoundDialog;
+import com.example.moodio.LoadingAlert;
+import com.example.moodio.R;
+import com.example.moodio.Utils.RealPathUtil;
+import com.example.moodio.Utils.ResponseServer;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
 import com.google.android.gms.fitness.data.Bucket;
@@ -44,7 +40,6 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.request.DataSourcesRequest;
-import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -209,7 +204,7 @@ private Uri createUri(){
         imageFile=new File(getApplicationContext().getFilesDir(),"camera_photo.jpg");
         return FileProvider.getUriForFile(
                 getApplicationContext(),
-                "com.example.emlody.fileProvider", imageFile
+                "com.example.moodio.fileProvider", imageFile
         );
 }
 
