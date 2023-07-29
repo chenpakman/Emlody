@@ -42,7 +42,7 @@ public class PlaylistsActivity extends AppCompatActivity {
         Gson gson = new Gson();
         ResponseServer res = gson.fromJson(playlistsJson, ResponseServer.class);
         TextView title =findViewById(R.id.playlistTitle);
-        title.setText("The detected emotion is "+ res.getEmotion().toLowerCase(Locale.ROOT)+"\n Here are your playlists:\n");
+        title.setText("It seems you are feeling "+ res.getEmotion().toLowerCase(Locale.ROOT)+".\n So here are your playlists:\n");
         playListAdapter=new PlayListAdapter(this,R.layout.list_row,playlistsArray);
         playListsListView.setAdapter(playListAdapter);
 

@@ -236,8 +236,8 @@ private void reorderUi(Uri imageUri){
   imageView.setImageURI(imageUri);
 
     title.animate().alpha(1f).y(100);
-    cameraFloatingActionButton.animate().alpha(1f).y(1960);
-    galleryFloatingActionButton.animate().alpha(1f).y(1710);
+    cameraFloatingActionButton.animate().alpha(1f).y(1560);
+    galleryFloatingActionButton.animate().alpha(1f).y(1310);
 }
 private void checkForPermission(){
     if (ContextCompat.checkSelfPermission(AnalyzeEmotionActivity.this, Manifest.permission.ACTIVITY_RECOGNITION)
@@ -299,8 +299,8 @@ private void checkCameraPermissionsAndOpenCamera(){
             .addFormDataPart("image", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
             .build();
     Request request = new Request.Builder()
-            //.url("http://192.168.1.218:9000/app")
-            .url("http://192.168.1.34:9000/app")
+            .url("http://192.168.1.220:9000/app")
+            //.url("http://192.168.1.34:9000/app")
             .post(requestBody)
             .build();
     okHttpClient.newCall(request)
@@ -363,8 +363,8 @@ private void buttonAnimation(){
                 .build();
 
         Request request = new Request.Builder()
-               // .url("http://192.168.1.218:9000/app?emotions=" + emotions)
-                .url("http://192.168.1.34:9000/app?emotions=" + emotions)
+                .url("http://192.168.1.220:9000/app?emotions=" + emotions)
+                //.url("http://192.168.1.34:9000/app?emotions=" + emotions)
                 .put(new RequestBody() {
                     @Override
                     public MediaType contentType() {
