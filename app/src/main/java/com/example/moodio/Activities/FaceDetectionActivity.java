@@ -3,7 +3,10 @@ package com.example.moodio.Activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Camera;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
@@ -87,9 +90,10 @@ public class FaceDetectionActivity extends AppCompatActivity {
         cameraSource = new CameraSource.Builder(this, detector)
                 .setFacing(CameraSource.CAMERA_FACING_FRONT)
                 .setRequestedPreviewSize(640, 480)
-                .setRequestedFps(30.0f)
+                .setRequestedFps(1.0f)
                 .setAutoFocusEnabled(true)
                 .build();
+
 
         cameraView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -114,19 +118,87 @@ public class FaceDetectionActivity extends AppCompatActivity {
             }
         });
 
+
         detector.setProcessor(new Detector.Processor<Face>() {
             @Override
             public void release() {}
 
             @Override
-            public void receiveDetections(Detector.Detections<Face> detections) {
+            public void receiveDetections(@NonNull Detector.Detections<Face> detections) {
+
+            }
+
+            /*@Override
+            public void receiveDetections(@NonNull Detector.Detections<Face> detections) {
+                SparseArray<Face> detectedFaces = detections.getDetectedItems();
+
+                // Ensure that at least one face is detected
+                if (detectedFaces.size() > 0) {
+                    Face face = detectedFaces.valueAt(0); // Get the first detected face
+
+                    // Get the frame data as a byte array
+                    //byte[] data = cameraSource.getPreviewFrameBytes();
+
+
+                    // Get frame properties
+                    int frameWidth = cameraSource.getPreviewSize().getWidth();
+                    int frameHeight = cameraSource.getPreviewSize().getHeight();
+                    // Calculate the face bounding box coordinates
+                    float left = face.getPosition().x;
+                    float top = face.getPosition().y;
+                    float width = face.getWidth();
+                    float height = face.getHeight();
+
+                    // Ensure the bounding box is within the frame dimensions
+                    left = Math.max(0, left);
+                    top = Math.max(0, top);
+                    width = Math.min(frameWidth - left, width);
+                    height = Math.min(frameHeight - top, height);
+
+                    // Create a Bitmap from the frame data
+                    //Bitmap bitmapFrame = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    Bitmap bitmapFrame = BitmapFactory.dec
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90); // Adjust the rotation angle as needed
+                    bitmapFrame = Bitmap.createBitmap(bitmapFrame, 0, 0, frameWidth, frameHeight, matrix, true);
+
+                    // Crop the Bitmap to the face region
+                    Bitmap bitmapFace = Bitmap.createBitmap(bitmapFrame, (int) left, (int) top, (int) width, (int) height);
+
+                    // Now you have a Bitmap image (bitmapFace) representing the detected face region.
+                    // You can use it for further processing or save it to storage.
+                    // For example, to save the image to storage:
+
+                    // Note: Don't forget to handle storage permissions in your AndroidManifest.xml
+                    // and request runtime permissions if targeting API 23 and above.
+
+                    // Save the Bitmap as an image file
+                    File outputDir = getOutputMediaDir();
+                    if (outputDir != null) {
+                        String fileName = "face_image.jpg";
+                        File imageFile = new File(outputDir, fileName);
+
+                        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+                            bitmapFace.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                            fos.flush();
+                            fos.close();
+                            // Now the Bitmap image of the detected face region is saved to imageFile as a JPEG.
+                            // You can access the image using imageFile.getAbsolutePath().
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }*/
+
+            /*public void receiveDetections(@NonNull Detector.Detections<Face> detections) {
                 SparseArray<Face> faces = detections.getDetectedItems();
                 if (faces.size() > 0) {
                     Log.d("FaceDetection", "Face detected");
                     if (cameraSource != null) {
                         cameraSource.takePicture(null, new CameraSource.PictureCallback() {
                             @Override
-                            public void onPictureTaken(byte[] bytes) {
+                            public void onPictureTaken(@NonNull byte[] bytes) {
                                 try {
                                     File pictureFile = getOutputMediaFile();
                                     if (pictureFile == null) {
@@ -146,16 +218,18 @@ public class FaceDetectionActivity extends AppCompatActivity {
                             }
                         });
                     }
-                    /*runOnUiThread(new Runnable() {
+                    *//*runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(FaceDetectionActivity.this, "Face detected",
                                     Toast.LENGTH_SHORT).show();
                         }
-                    });*/
+                    });*//*
                 }
-            }
+            }*/
         });
+        
+        
     }
 
     @Override
@@ -202,7 +276,7 @@ public class FaceDetectionActivity extends AppCompatActivity {
                 .addFormDataPart("image", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
                 .build();
         Request request = new Request.Builder()
-                .url("http://192.168.1.220:9000/app")
+                .url("http://192.168.1.218:9000/app")
                 //.url("http://192.168.1.34:9000/app")
                 .post(requestBody)
                 .build();
@@ -210,10 +284,7 @@ public class FaceDetectionActivity extends AppCompatActivity {
                 .enqueue(new Callback() {
                     @Override
                     public void onFailure(@NonNull final Call call, @NonNull IOException e) {
-                        runOnUiThread(() -> {
-                            Toast.makeText(FaceDetectionActivity.this, "Something went wrong, please try again." + e.getMessage(), Toast.LENGTH_LONG).show();
 
-                        });
                     }
                     @Override
                     public void onResponse(@NonNull Call call, final Response response) throws IOException {
@@ -223,20 +294,15 @@ public class FaceDetectionActivity extends AppCompatActivity {
                             ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
                             if (response.code() == 200) {
                                 if(currentDetectedMood == null || !currentDetectedMood.equals(serverResponse.getEmotion())) {
-                                    cameraSource.stop();
+                                    //cameraSource.stop();
+                                    currentDetectedMood = serverResponse.getEmotion();
+
                                     runOnUiThread(() -> {
                                         Intent intent = new Intent(FaceDetectionActivity.this, PlaylistsActivity.class);
                                         intent.putExtra("EXTRA_MESSAGE", url);
                                         startActivity(intent);
                                     });
                                 }
-                            }
-                            else{
-                                /*Gson gson = new Gson(); // Or use new GsonBuilder().create();
-                                ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);*/
-                                runOnUiThread(() -> {
-                                    Toast.makeText(FaceDetectionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
-                                });
                             }
                         }
                     }});

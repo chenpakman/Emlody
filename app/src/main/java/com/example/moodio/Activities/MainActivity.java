@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void generatePlaylistButtonClicked(View view){
-        Intent intent=new Intent(MainActivity.this, FaceDetectionActivity.class);
+        Intent intent=new Intent(MainActivity.this, LiveCameraActivity.class);
         startActivity(intent);
     }
 }
