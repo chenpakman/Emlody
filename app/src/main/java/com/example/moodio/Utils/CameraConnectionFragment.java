@@ -298,11 +298,13 @@ public class CameraConnectionFragment extends Fragment {
         this.cameraId = cameraId;
     }
 
+
     /** Sets up member variables related to camera. */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setUpCameraOutputs() {
         final Activity activity = getActivity();
         final CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+
         try {
             final CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
 
@@ -348,6 +350,7 @@ public class CameraConnectionFragment extends Fragment {
         configureTransform(width, height);
         final Activity activity = getActivity();
         final CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+
         try {
             if (!cameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
