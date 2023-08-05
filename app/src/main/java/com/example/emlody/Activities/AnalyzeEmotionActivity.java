@@ -1,14 +1,11 @@
 package com.example.emlody.Activities;
-
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -32,8 +29,6 @@ import com.example.emlody.Utils.RealPathUtil;
 import com.example.emlody.Utils.ResponseServer;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
 import com.google.android.gms.fitness.data.Bucket;
@@ -44,13 +39,21 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.request.DataSourcesRequest;
-import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.gson.Gson;
+import com.samsung.android.sdk.healthdata.HealthConnectionErrorResult;
+import com.samsung.android.sdk.healthdata.HealthConstants;
+import com.samsung.android.sdk.healthdata.HealthData;
+import com.samsung.android.sdk.healthdata.HealthDataResolver;
+import com.samsung.android.sdk.healthdata.HealthDataStore;
+import com.samsung.android.sdk.healthdata.HealthDevice;
+import com.samsung.android.sdk.healthdata.HealthDeviceManager;
+import com.samsung.android.sdk.healthdata.HealthPermissionManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -74,10 +77,14 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     private Uri imageUri;
     private ImageView imageView;
     private TextView title;
+
     private File imageFile;
+    private HealthDataStore mStore;
     private Button galleryFloatingActionButton;
     private Button cameraFloatingActionButton;
     GoogleSignInAccount account;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +121,6 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
             //measureHeartRate(account);
         }
 
-
         cameraFloatingActionButton.setOnClickListener(v -> checkCameraPermissionsAndOpenCamera());
         galleryFloatingActionButton.setOnClickListener(v -> {
             Intent iGallery = new Intent(Intent.ACTION_PICK);
@@ -125,45 +131,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     }
 
 
-    private SensorEventListener sensorListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            // Process heart rate data
-            float heartRate = event.values[0];
-            System.out.println("measured! "+heartRate);
-            // Handle heart rate value
-        }
 
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // Handle accuracy changes if needed
-        }
-    };
-private void checkForSensors()
-{
-    FitnessOptions fitnessOptions = FitnessOptions.builder().addDataType(DataType.TYPE_STEP_COUNT_DELTA).build();
-
-// Note: Fitness.SensorsApi.findDataSources() requires the
-// ACCESS_FINE_LOCATION permission.
-    Fitness.getSensorsClient(getApplicationContext(), GoogleSignIn.getAccountForExtension(getApplicationContext(), fitnessOptions))
-            .findDataSources(
-                    new DataSourcesRequest.Builder()
-                            .setDataTypes(DataType.TYPE_STEP_COUNT_DELTA)
-                            .setDataSourceTypes(DataSource.TYPE_RAW)
-                            .build())
-            .addOnSuccessListener(dataSources -> {
-                dataSources.forEach(dataSource -> {
-                    System.out.println("Data source found: ${it.streamIdentifier}");
-                    System.out.println("Data Source type: ${it.dataType.name}");
-
-                    if (dataSource.getDataType() == DataType.TYPE_STEP_COUNT_DELTA) {
-                        System.out.println( "Data source for STEP_COUNT_DELTA found!");
-
-                    }
-                });})
-            .addOnFailureListener(e ->
-                    System.out.println("Find data sources request failed"+ e.getMessage()));
-}
 
     private void accessGoogleFit(FitnessOptions fitnessOptions, GoogleSignInAccount account) {
 
@@ -171,8 +139,6 @@ private void checkForSensors()
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             LocalDateTime end = LocalDateTime.now();
             LocalDateTime start= end.minusYears(1);
-           /* long endSeconds = end.atZone(ZoneId.systemDefault()).toEpochSecond();
-            long startSeconds = start.atZone(ZoneId.systemDefault()).toEpochSecond();*/
             long endTime = System.currentTimeMillis();  // Current time
             long startTime = endTime - TimeUnit.DAYS.toMillis(20);
             DataReadRequest readRequest = new DataReadRequest.Builder()
@@ -304,8 +270,7 @@ private void checkCameraPermissionsAndOpenCamera(){
             .addFormDataPart("image", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
             .build();
     Request request = new Request.Builder()
-            //.url("http://192.168.1.218:9000/app")
-            .url("http://192.168.1.34:9000/app")
+            .url("http://3.70.133.202:8080/app")
             .post(requestBody)
             .build();
     okHttpClient.newCall(request)
@@ -368,8 +333,7 @@ private void buttonAnimation(){
                 .build();
 
         Request request = new Request.Builder()
-               // .url("http://192.168.1.218:9000/app?emotions=" + emotions)
-                .url("http://192.168.1.34:9000/app?emotions=" + emotions)
+                .url("http://3.70.133.202:8080/app?emotions=" + emotions)
                 .put(new RequestBody() {
                     @Override
                     public MediaType contentType() {
