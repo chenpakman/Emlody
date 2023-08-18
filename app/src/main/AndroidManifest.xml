@@ -38,7 +38,11 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.LiveCameraActivity"
+            android:name=".tests.activities.TestActivity"
+            android:parentActivityName=".Activities.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tests.activities.LiveStreamActivity"
             android:parentActivityName=".Activities.MainActivity"
             android:exported="false" />
         <!--<activity

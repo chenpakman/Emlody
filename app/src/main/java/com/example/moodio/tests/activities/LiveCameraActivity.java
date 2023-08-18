@@ -1,10 +1,9 @@
-package com.example.moodio.Activities;
+package com.example.moodio.tests.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -25,10 +24,9 @@ import android.view.Surface;
 import android.widget.Toast;
 
 import com.example.moodio.R;
-import com.example.moodio.Utils.CameraConnectionFragment;
-import com.example.moodio.Utils.ImageUtils;
+import com.example.moodio.tests.utils.CameraConnectionFragment;
+import com.example.moodio.tests.utils.ImageUtils;
 import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 

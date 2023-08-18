@@ -47,7 +47,6 @@ public class PlaylistsActivity extends AppCompatActivity {
         playListsListView.setAdapter(playListAdapter);
 
         addPlaylists(res);
-        System.out.println("On create PlaylistActivity");//ToDo:delete
 
     }
 private void addPlaylists(ResponseServer res){
