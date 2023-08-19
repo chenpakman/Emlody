@@ -19,9 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.moodio.R;
-import com.example.moodio.tests.utils.PlaybackRequest;
 import com.example.moodio.Utils.ResponseServer;
-import com.example.moodio.tests.utils.SpotifyService;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -71,7 +69,7 @@ public class LiveStreamActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_stream);
         getWindow().setStatusBarColor(Color.BLACK);
-        webView = findViewById(R.id.spotifyWebView);
+        webView = findViewById(R.id.boomboxWebView);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         webView.getSettings().setJavaScriptEnabled(true);
         CookieManager cookieManager = CookieManager.getInstance();
@@ -92,7 +90,7 @@ public class LiveStreamActivity extends AppCompatActivity {
                 String url = request.getUrl().toString();
                 if (url.startsWith(REDIRECT_URI)) {
                     handleRedirectUri(url);
-                    startPlayback();
+                    //startPlayback();
                     return true;
                 }
                 return super.shouldOverrideUrlLoading(view, request);
@@ -140,7 +138,7 @@ public class LiveStreamActivity extends AppCompatActivity {
         return sb.substring(0, sb.length() - 1);
     }
 
-    private void startPlayback() {
+    /*private void startPlayback() {
         String playlistUrl =  getIntent().getStringExtra("EXTRA_MESSAGE");
         String playlistUri = "spotify:playlist:" + playlistUrl; // Replace with your desired playlist URI
 
@@ -181,7 +179,7 @@ public class LiveStreamActivity extends AppCompatActivity {
                 });
             }
         });
-    }
+    }*/
 
     public void requestPlaylist(String emotions) {
 

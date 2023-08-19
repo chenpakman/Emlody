@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.moodio.R;
+import com.example.moodio.tests.activities.LiveCameraActivity;
 import com.example.moodio.tests.activities.LiveStreamActivity;
 import com.example.moodio.tests.activities.TestActivity;
 
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void generatePlaylistButtonClicked(View view){
-        Intent intent=new Intent(MainActivity.this, TestActivity.class);
+        Intent intent=new Intent(MainActivity.this, LiveCameraActivity.class);
         startActivity(intent);
     }
 }

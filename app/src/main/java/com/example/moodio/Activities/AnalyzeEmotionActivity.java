@@ -296,7 +296,7 @@ private void checkCameraPermissionsAndOpenCamera(){
     ActivityCompat.requestPermissions(AnalyzeEmotionActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, GALLERY_REQ_CODE);
     RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("image", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
+            .addFormDataPart("image", file.getName(), RequestBody.create(file, MediaType.parse("application/octet-stream")))
             .build();
     Request request = new Request.Builder()
             .url("http://3.70.133.202:8080/app")

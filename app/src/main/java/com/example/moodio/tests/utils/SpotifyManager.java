@@ -1,13 +1,10 @@
 package com.example.moodio.tests.utils;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.moodio.Activities.AnalyzeEmotionActivity;
-import com.example.moodio.Activities.PlaylistsActivity;
+import com.example.moodio.Utils.Playlist;
 import com.example.moodio.Utils.ResponseServer;
 import com.google.gson.Gson;
 import com.spotify.android.appremote.api.ConnectionParams;
@@ -18,8 +15,12 @@ import com.spotify.protocol.types.Track;
 
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -66,7 +67,7 @@ public class SpotifyManager {
             public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
                 // You're connected to Spotify!
-                Log.d("TestActivity", "Connected to spotify!");
+                Log.d("SpotifyManager", "Connected to spotify!");
 
                 // Now you can start interacting with App Remote
                 getPlaylist(DEFAULT_EMOTION);;
@@ -74,22 +75,43 @@ public class SpotifyManager {
 
             @Override
             public void onFailure(Throwable throwable) {
-                Log.e("TestActivity", "Failed to connect to spotify " + throwable.getMessage(), throwable);
+                Log.e("SpotifyManager", "Failed to connect to spotify " + throwable.getMessage(), throwable);
             }
         });
     }
 
-    private void connected() {
+    public void playPlaylist(ResponseServer responseServer ) throws MalformedURLException {
+        if(!Objects.equals(currentEmotion, responseServer.getEmotion())){
+            currentEmotion = responseServer.getEmotion();
+            Playlist defaultPlaylist = new Playlist(responseServer.getPlaylistUrl(), null);
+            URL url = new URL(
+                    Objects.requireNonNull(
+                            Objects.requireNonNull(
+                                    responseServer
+                                            .getPlaylistsUrls()
+                                            .getOrDefault(currentEmotion, defaultPlaylist)
+                                    )
+                            .getPlaylistUrl()
+            ));
+
+            String playlistUri = url.getPath();
+            playlistUri = playlistUri.replace("/",":");
+            Log.d("SpotifyManager", "About to play " + playlistUri);
+            connected(playlistUri);
+        }
+    }
+
+    private void connected(String playlistUri) {
 
         // Play a playlist
-        mSpotifyAppRemote.getPlayerApi().play("spotify" + DEFAULT_PLAYLIST);
+        mSpotifyAppRemote.getPlayerApi().play("spotify" + playlistUri);
         // Subscribe to PlayerState
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(playerState -> {
                     final Track track = playerState.track;
                     if (track != null) {
-                        Log.d("TestActivity", track.name + " by " + track.artist.name);
+                        Log.d("SpotifyManager", track.name + " by " + track.artist.name);
                     }
                 });
     }
@@ -115,7 +137,7 @@ public class SpotifyManager {
         mHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.e("TestActivity", "Failed to retrieve spotify link, couldn't connect to server.\n" + e.getMessage());
+                Log.e("SpotifyManager", "Failed to retrieve spotify link, couldn't connect to server.\n" + e.getMessage());
             }
 
             @Override
@@ -128,14 +150,14 @@ public class SpotifyManager {
                         URL url = new URL(serverResponse.getPlaylistUrl());
                         DEFAULT_PLAYLIST = url.getPath();
                         DEFAULT_PLAYLIST = DEFAULT_PLAYLIST.replace("/",":");
-                        Log.d("TestActivity", "Retrieved spotify link: " + DEFAULT_PLAYLIST);
+                        Log.d("SpotifyManager", "Retrieved spotify link: " + DEFAULT_PLAYLIST);
 
-                        connected();
+                        connected(DEFAULT_PLAYLIST);
 
                     }
                     response.close();
                 } else {
-                    Log.e("TestActivity", "Failed to retrieve spotify link, null response body.\n" + "Response Code: " + response.code());
+                    Log.e("SpotifyManager", "Failed to retrieve spotify link, null response body.\n" + "Response Code: " + response.code());
 
                 }
             }
@@ -147,11 +169,27 @@ public class SpotifyManager {
     }
 
     public void stopMusic() {
-        mSpotifyAppRemote.getPlayerApi().pause();
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+
+                    if(!playerState.isPaused){
+                        mSpotifyAppRemote.getPlayerApi().pause();
+                    }
+                });
+
     }
 
     public void resumeMusic() {
-        mSpotifyAppRemote.getPlayerApi().resume();
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+
+                    if(playerState.isPaused){
+                        mSpotifyAppRemote.getPlayerApi().resume();
+                    }
+
+                });
     }
 
     //TODO: response.close() to all HTTP responses with body
