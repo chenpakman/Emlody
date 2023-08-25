@@ -85,6 +85,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     private File imageFile;
     private Button galleryFloatingActionButton;
     private Button cameraFloatingActionButton;
+   private SharedViewModel sharedViewModel;
 
 
     @Override
@@ -94,6 +95,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.BLACK);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         checkForPermission();
+        sharedViewModel = SharedViewModelFactory.getInstance();
         cameraFloatingActionButton=findViewById(R.id.cameraFloatingActionButton);
         galleryFloatingActionButton=findViewById(R.id.floatingActionButton);
         title=findViewById(R.id.vibesTextView);
@@ -201,8 +203,7 @@ private void checkCameraPermissionsAndOpenCamera(){
 
     private void uploadImageToServer( File file ,LoadingAlert loadingAlert){
         Intent intent=new Intent(AnalyzeEmotionActivity.this, MeasureHeartbeatActivity.class);
-        SharedViewModel sharedViewModel = SharedViewModelFactory.getInstance();
-        sharedViewModel.clearServerResponse();
+        sharedViewModel.setServerResponse(null);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
@@ -222,7 +223,7 @@ private void checkCameraPermissionsAndOpenCamera(){
             .enqueue(new Callback() {
                 @Override
                 public void onFailure(@NonNull final Call call, @NonNull IOException e) {
-                    sharedViewModel.setServerResponse(null);
+                    sharedViewModel.setPostServerResponse("e");
                     runOnUiThread(() -> {
                         Toast.makeText(AnalyzeEmotionActivity.this, "Something went wrong, please try again." + e.getMessage(), Toast.LENGTH_LONG).show();
 
@@ -231,19 +232,16 @@ private void checkCameraPermissionsAndOpenCamera(){
                 @Override
                 public void onResponse(@NonNull Call call, final Response response) throws IOException {
                     if(response.body()!=null){
-
                         String url = response.body().string();
-                        sharedViewModel.setServerResponse(url);
-                        System.out.println("setServerResponse!");
+
                         if (response.code() == 200) {
+                            sharedViewModel.setPostServerResponse(url);
+                            System.out.println("setServerResponse!");
 
                         }
                         else if(response.code() == 204) {
-                            sharedViewModel.setServerResponse(null);
-                            runOnUiThread(() -> {
-                                EmotionNotFoundDialog dialog = new EmotionNotFoundDialog(AnalyzeEmotionActivity.this);
-                                dialog.show();
-                            });
+                            sharedViewModel.setPostServerResponse("e");
+
 
                         }
                         else{
@@ -271,7 +269,7 @@ private void buttonAnimation(){
         b.animate().alpha(1f).translationYBy(-1000).setDuration(1500);
     }
 }
-    public void requestPlayLists(String emotions) {
+    /*public void requestPlayLists(String emotions) {
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(60, TimeUnit.SECONDS)
@@ -324,7 +322,7 @@ private void buttonAnimation(){
                         }
                 }}  );
     }
-
+*/
     }
 
 

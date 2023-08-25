@@ -13,8 +13,11 @@ public class SharedViewModel extends ViewModel  {
         return serverResponseLiveData;
     }
 
-    public void setServerResponse(String serverResponse) {
+    public void setPostServerResponse(String serverResponse) {
         serverResponseLiveData.postValue(serverResponse);
+    }
+    public void setServerResponse(String serverResponse) {
+        serverResponseLiveData.setValue(serverResponse);
     }
     public void clearServerResponse(){
         serverResponseLiveData.setValue(null);
