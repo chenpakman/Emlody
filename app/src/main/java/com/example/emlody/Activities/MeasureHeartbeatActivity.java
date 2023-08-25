@@ -65,7 +65,6 @@ public class MeasureHeartbeatActivity extends AppCompatActivity {
     private void setResponseLiveDataObserve(){
         LiveData<String> serverResponseLiveData = sharedViewModel.getServerResponseLiveData();
         serverResponseLiveData.observe(this, serverResponse -> {
-            System.out.println("serverResponse"+serverResponse);
             serverResponseString=serverResponse;
             if(serverResponseString!=null&&serverResponseString.equals("e")){
                 runOnUiThread(() -> {
@@ -170,7 +169,7 @@ public class MeasureHeartbeatActivity extends AppCompatActivity {
                                 });
                             }
                             else{
-                                Gson gson = new Gson(); // Or use new GsonBuilder().create();
+                                Gson gson = new Gson();
                                 ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
                                 runOnUiThread(() -> {
                                     Toast.makeText(MeasureHeartbeatActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
