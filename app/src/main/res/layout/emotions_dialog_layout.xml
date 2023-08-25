@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Your dialog content here -->
+
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -42,8 +49,8 @@
 
         <TextView
             android:id="@+id/done_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:text="Done"
             android:textAlignment="center"
             android:textColor="#3F51B5"
@@ -53,3 +60,4 @@
     </LinearLayout>
 
 </RelativeLayout>
+</ScrollView>
