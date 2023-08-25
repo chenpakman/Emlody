@@ -21,10 +21,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.emlody.EmotionNotFoundDialog;
 import com.example.emlody.LoadingAlert;
 import com.example.emlody.R;
+import com.example.emlody.SharedViewModel;
+import com.example.emlody.SharedViewModelFactory;
 import com.example.emlody.Utils.RealPathUtil;
 import com.example.emlody.Utils.ResponseServer;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -79,10 +83,8 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     private TextView title;
 
     private File imageFile;
-    private HealthDataStore mStore;
     private Button galleryFloatingActionButton;
     private Button cameraFloatingActionButton;
-    GoogleSignInAccount account;
 
 
     @Override
@@ -102,74 +104,13 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         buttonAnimation();
         registerPictureCameraLauncher();
         registerPictureGalleryLauncher();
-        FitnessOptions fitnessOptions = FitnessOptions.builder()
-                .addDataType(DataType.TYPE_HEART_RATE_BPM, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.AGGREGATE_HEART_POINTS, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.AGGREGATE_LOCATION_BOUNDING_BOX,FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-                .build();
-
-        account = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
-        if (!GoogleSignIn.hasPermissions(account, fitnessOptions)) {
-            GoogleSignIn.requestPermissions(
-                    this, // your activity
-                    1, // e.g. 1
-                    account,
-                    fitnessOptions);
-        } else {
-          //accessGoogleFit(fitnessOptions,account);
-            //measureHeartRate(account);
-        }
-
         cameraFloatingActionButton.setOnClickListener(v -> checkCameraPermissionsAndOpenCamera());
         galleryFloatingActionButton.setOnClickListener(v -> {
             Intent iGallery = new Intent(Intent.ACTION_PICK);
             iGallery.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             imageLauncher.launch("image/*");
         });
-
     }
-
-
-
-
-    private void accessGoogleFit(FitnessOptions fitnessOptions, GoogleSignInAccount account) {
-
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            LocalDateTime end = LocalDateTime.now();
-            LocalDateTime start= end.minusYears(1);
-            long endTime = System.currentTimeMillis();  // Current time
-            long startTime = endTime - TimeUnit.DAYS.toMillis(20);
-            DataReadRequest readRequest = new DataReadRequest.Builder()
-                    .aggregate(DataType.TYPE_HEART_RATE_BPM)
-                    .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-                    .bucketByTime(1, TimeUnit.DAYS)
-                    .enableServerQueries()
-                    .build();
-            Fitness.getHistoryClient(this, account)
-                    .readData(readRequest)
-                    .addOnSuccessListener(res->
-                            getHeartHistory(res.getBuckets())
-                    )
-                    .addOnFailureListener( e -> System.out.println("error!"+e));
-                 }
-    }
-
-
-
-private void getHeartHistory(List<Bucket> buckets){
-    for (Bucket bucket : buckets) {
-        List<DataSet> dataSets = bucket.getDataSets();
-        for (DataSet dataSet : dataSets) {
-            for (DataPoint dataPoint : dataSet.getDataPoints()) {
-                float heartRate = dataPoint.getValue(Field.FIELD_AVERAGE).asFloat();
-                System.out.println("heartRate"+heartRate);
-            }
-        }
-    }
-
-}
 
 private Uri createUri(){
         imageFile=new File(getApplicationContext().getFilesDir(),"camera_photo.jpg");
@@ -254,12 +195,15 @@ private void checkCameraPermissionsAndOpenCamera(){
 
     protected void selectFromGallery() {
         LoadingAlert loadingAlert =new LoadingAlert(AnalyzeEmotionActivity.this);
-        runOnUiThread(() -> loadingAlert.startAlertDialog());
+        //runOnUiThread(() -> loadingAlert.startAlertDialog());
         uploadImageToServer(imageFile, loadingAlert);
      }
 
     private void uploadImageToServer( File file ,LoadingAlert loadingAlert){
-    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+        Intent intent=new Intent(AnalyzeEmotionActivity.this, MeasureHeartbeatActivity.class);
+        SharedViewModel sharedViewModel = SharedViewModelFactory.getInstance();
+        sharedViewModel.clearServerResponse();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
@@ -270,15 +214,16 @@ private void checkCameraPermissionsAndOpenCamera(){
             .addFormDataPart("image", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
             .build();
     Request request = new Request.Builder()
-            .url("http://3.70.133.202:8080/app")
+            .url("http://192.168.1.35:8080/app")
+            //.url("http://3.70.133.202:8080/app")
             .post(requestBody)
             .build();
     okHttpClient.newCall(request)
             .enqueue(new Callback() {
                 @Override
                 public void onFailure(@NonNull final Call call, @NonNull IOException e) {
+                    sharedViewModel.setServerResponse(null);
                     runOnUiThread(() -> {
-                        loadingAlert.closeAlertDialog();
                         Toast.makeText(AnalyzeEmotionActivity.this, "Something went wrong, please try again." + e.getMessage(), Toast.LENGTH_LONG).show();
 
                     });
@@ -286,33 +231,35 @@ private void checkCameraPermissionsAndOpenCamera(){
                 @Override
                 public void onResponse(@NonNull Call call, final Response response) throws IOException {
                     if(response.body()!=null){
+
                         String url = response.body().string();
+                        sharedViewModel.setServerResponse(url);
+                        System.out.println("setServerResponse!");
                         if (response.code() == 200) {
-                            runOnUiThread(() -> {
-                                loadingAlert.closeAlertDialog();
-                                Intent intent = new Intent(AnalyzeEmotionActivity.this, PlaylistsActivity.class);
-                                intent.putExtra("EXTRA_MESSAGE", url);
-                                startActivity(intent);
-                            });
+
                         }
                         else if(response.code() == 204) {
+                            sharedViewModel.setServerResponse(null);
                             runOnUiThread(() -> {
-                                loadingAlert.closeAlertDialog();
                                 EmotionNotFoundDialog dialog = new EmotionNotFoundDialog(AnalyzeEmotionActivity.this);
                                 dialog.show();
                             });
 
                         }
                         else{
+
                             Gson gson = new Gson(); // Or use new GsonBuilder().create();
                             ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
                             runOnUiThread(() -> {
-                                loadingAlert.closeAlertDialog();
+                               // loadingAlert.closeAlertDialog();
                                 Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
                             });
                         }
                 }
             }});
+        runOnUiThread(() -> {
+            startActivity(intent);
+        });
     }
 
 
@@ -333,7 +280,8 @@ private void buttonAnimation(){
                 .build();
 
         Request request = new Request.Builder()
-                .url("http://3.70.133.202:8080/app?emotions=" + emotions)
+                //.url("http://3.70.133.202:8080/app?emotions=" + emotions)
+                .url("http://192.168.1.35:8080/app?emotions=" + emotions)
                 .put(new RequestBody() {
                     @Override
                     public MediaType contentType() {
@@ -377,7 +325,7 @@ private void buttonAnimation(){
                 }}  );
     }
 
-}
+    }
 
 
 

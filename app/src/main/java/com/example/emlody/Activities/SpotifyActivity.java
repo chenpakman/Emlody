@@ -1,4 +1,3 @@
-
 package com.example.emlody.Activities;
 import android.content.Intent;
 import android.graphics.Color;
@@ -102,5 +101,3 @@ public class SpotifyActivity extends AppCompatActivity {
         return sb.substring(0, sb.length() - 1);
     }
 }
-
-
