@@ -3,6 +3,7 @@ package com.example.moodio.tests.utils;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,8 +36,8 @@ public class ImageUtils {
      *
      * @param bitmap The bitmap to save.
      */
-    public static void saveBitmap(final Bitmap bitmap) {
-        saveBitmap(bitmap, "preview.png");
+    public static File saveBitmap(final Bitmap bitmap) {
+        return saveBitmap(bitmap, "preview.png");
     }
 
     /**
@@ -45,14 +46,14 @@ public class ImageUtils {
      * @param bitmap The bitmap to save.
      * @param filename The location to save the bitmap to.
      */
-    public static void saveBitmap(final Bitmap bitmap, final String filename) {
+    public static File saveBitmap(final Bitmap bitmap, final String filename) {
         final String root =
                 Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "tensorflow";
-        //LOGGER.i("Saving %dx%d bitmap to %s.", bitmap.getWidth(), bitmap.getHeight(), root);
+        Log.d("Image Utils", "Saving " + bitmap.getWidth()+ "X" + bitmap.getHeight() +" bitmap to "+ root);
         final File myDir = new File(root);
 
         if (!myDir.mkdirs()) {
-            // LOGGER.i("Make dir failed");
+            Log.d("Image Utils", "mkdir failed");
         }
 
         final String fname = filename;
@@ -68,6 +69,8 @@ public class ImageUtils {
         } catch (final Exception e) {
             //LOGGER.e(e, "Exception!");
         }
+
+        return file;
     }
 
     public static void convertYUV420SPToARGB8888(byte[] input, int width, int height, int[] output) {

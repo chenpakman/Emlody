@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.moodio.Utils.Playlist;
 import com.example.moodio.Utils.ResponseServer;
 import com.google.gson.Gson;
 import com.spotify.android.appremote.api.ConnectionParams;
@@ -17,10 +16,8 @@ import com.spotify.protocol.types.Track;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -80,10 +77,10 @@ public class SpotifyManager {
         });
     }
 
-    public void playPlaylist(ResponseServer responseServer ) throws MalformedURLException {
-        if(!Objects.equals(currentEmotion, responseServer.getEmotion())){
+    public void playPlaylist(String playlistURL, String detectedEmotion) {
+        /*if(!Objects.equals(currentEmotion, responseServer.getEmotion())){
             currentEmotion = responseServer.getEmotion();
-            Playlist defaultPlaylist = new Playlist(responseServer.getPlaylistUrl(), null);
+            Playlist defaultPlaylist = new Playlist(responseServer.getDefaultPlaylistUrl(), null);
             URL url = new URL(
                     Objects.requireNonNull(
                             Objects.requireNonNull(
@@ -91,13 +88,26 @@ public class SpotifyManager {
                                             .getPlaylistsUrls()
                                             .getOrDefault(currentEmotion, defaultPlaylist)
                                     )
-                            .getPlaylistUrl()
+                            .getDefaultPlaylistUrl()
             ));
 
             String playlistUri = url.getPath();
             playlistUri = playlistUri.replace("/",":");
             Log.d("SpotifyManager", "About to play " + playlistUri);
             connected(playlistUri);
+        }*/
+        try{
+            if(!Objects.equals(currentEmotion, detectedEmotion)){
+                currentEmotion = detectedEmotion;
+                URL url = new URL(playlistURL);
+                String playlistUri = url.getPath();
+                playlistUri = playlistUri.replace("/",":");
+                Log.d("SpotifyManager", "About to play " + playlistUri);
+                connected(playlistUri);
+            }
+
+        } catch (MalformedURLException e) {
+            Log.e("SpotifyManager", "Couldn't form a URL " + e.getMessage(), e);
         }
     }
 
@@ -147,7 +157,7 @@ public class SpotifyManager {
                         String responseBody = response.body().string();
                         Gson gson = new Gson(); // Or use new GsonBuilder().create();
                         ResponseServer serverResponse = gson.fromJson(responseBody, ResponseServer.class);
-                        URL url = new URL(serverResponse.getPlaylistUrl());
+                        URL url = new URL(serverResponse.getDefaultPlaylistUrl());
                         DEFAULT_PLAYLIST = url.getPath();
                         DEFAULT_PLAYLIST = DEFAULT_PLAYLIST.replace("/",":");
                         Log.d("SpotifyManager", "Retrieved spotify link: " + DEFAULT_PLAYLIST);

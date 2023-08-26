@@ -22,11 +22,7 @@ import com.example.moodio.R;
 import com.example.moodio.Utils.ResponseServer;
 import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,8 +36,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.BufferedSink;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LiveStreamActivity extends AppCompatActivity {
 
@@ -220,7 +214,7 @@ public class LiveStreamActivity extends AppCompatActivity {
                             String jsonString = response.body().string();
                             ResponseServer serverResponse = gson.fromJson(jsonString, ResponseServer.class);
                             if (response.code() == 200) {
-                                getIntent().putExtra("EXTRA_MESSAGE", serverResponse.getPlaylistUrl());
+                                getIntent().putExtra("EXTRA_MESSAGE", serverResponse.getDefaultPlaylistUrl());
                             }
                             else{
 

@@ -93,7 +93,6 @@ public class EmotionNotFoundDialog extends Dialog implements View.OnClickListene
             }
         });
         this.emotionsListView.setAdapter(adapter);
-        doneText = findViewById(R.id.done_text);
 
         doneText.setOnClickListener(v -> {
 
@@ -101,7 +100,7 @@ public class EmotionNotFoundDialog extends Dialog implements View.OnClickListene
             for (String emotion:chosenEmotionsByUser) {
                 emotions += " " + emotion;
             }
-            emotions.trim();
+            emotions = emotions.trim();
             dismiss();
             this.activity.requestPlayLists(emotions);
 

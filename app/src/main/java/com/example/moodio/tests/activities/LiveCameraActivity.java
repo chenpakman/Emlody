@@ -9,9 +9,10 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.media.ExifInterface;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
@@ -222,8 +223,6 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
 
     private FaceDetector detector;
 
-    private Image currentImage;
-
     private boolean isUploadingImage = false;
 
     private static final int GALLERY_REQ_CODE=1000;
@@ -239,7 +238,6 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         }
         try {
             final Image image = reader.acquireLatestImage();
-            currentImage = image;
 
             if (image == null) {
                 return;
@@ -277,12 +275,12 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                     new Runnable() {
                         @Override
                         public void run() {
-                            image.close();
+                            image.close(); //todo: might need to delete for image rotating
                             isProcessingFrame = false;
                         }
                     };
 
-            processImage();
+            processImage(image);
 
         } catch (final Exception e) {
             Log.d("tryError",e.getMessage());
@@ -292,7 +290,7 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
     }
 
     //TODO: add detector code here
-    private void processImage() {
+    private void processImage(Image image) {
 
         detector = new FaceDetector.Builder(this)
                 .setTrackingEnabled(false)
@@ -316,14 +314,32 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(LiveCameraActivity.this, "Face detected",
+                        Toast.makeText(LiveCameraActivity.this, "Hey There :)",
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
 
+                // Before compressing the image
+                //Bitmap originalBitmap = BitmapFactory.decodeFile("path_to_original_image");
+                Matrix matrix = new Matrix();
+                //matrix.postRotate(getImageOrientation("path_to_original_image"));
+                matrix.postRotate(sensorOrientation);
+
+                // Rotate the image if needed
+                Bitmap rotatedBitmap = Bitmap.createBitmap(rgbFrameBitmap, 0, 0, rgbFrameBitmap.getWidth(), rgbFrameBitmap.getHeight(), matrix, true);
+
+                // Compress and save the rotated image
+                try {
+                    FileOutputStream outputStream = new FileOutputStream("output_path.jpg");
+                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream);
+                    outputStream.close();
+                }catch (IOException e){
+
+                }
+
                 Log.d("LiveCameraActivity", "FACE DETECTED ");
 
-                File imageFile = saveBitmapToFile(rgbFrameBitmap);
+                File imageFile = saveBitmapToFile(rotatedBitmap);
                 Log.d("LiveCameraActivity", "created file from bitmap " + imageFile.getPath());
 
                 uploadImageToServer(imageFile);
@@ -335,6 +351,31 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         postInferenceCallback.run();
 
     }
+
+    public int getImageOrientation(String imagePath) {
+        try {
+            ExifInterface exif = new ExifInterface(imagePath);
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            return getRotationAngleForOrientation(orientation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private int getRotationAngleForOrientation(int orientation) {
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return 90;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return 180;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return 270;
+            default:
+                return 0;
+        }
+    }
+
 
     private File saveBitmapToFile(Bitmap bitmap) {
         File outputDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -351,6 +392,9 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
 
         return outputFile;
     }
+
+
+
 
     private File createImageFile(File outputDir) {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
@@ -397,14 +441,14 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                                 Gson gson = new Gson(); // Or use new GsonBuilder().create();
                                 ResponseServer serverResponse = gson.fromJson(responseBody, ResponseServer.class);
                                 if (response.code() == 200) {
-                                    mSpotifyManager.playPlaylist(serverResponse);
+                                    mSpotifyManager.playPlaylist(serverResponse.getDefaultPlaylistUrl(), serverResponse.getEmotion());
                                     Log.d("LiveCameraActivity", "Retrieved playlist");
 
                                 } else if (response.code() == 204) {
-                                    Log.e("LiveCameraActivity", "didn't get a playlist ");
+                                    Log.e("LiveCameraActivity", "didn't get a playlist, response code: " + response.code());
 
                                 } else {
-                                    Log.e("LiveCameraActivity", "didn't get a playlist ");
+                                    Log.e("LiveCameraActivity", "didn't get a playlist, response code:" + response.code());
 
                                 }
                             }

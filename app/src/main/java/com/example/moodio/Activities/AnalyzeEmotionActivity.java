@@ -299,8 +299,8 @@ private void checkCameraPermissionsAndOpenCamera(){
             .addFormDataPart("image", file.getName(), RequestBody.create(file, MediaType.parse("application/octet-stream")))
             .build();
     Request request = new Request.Builder()
-            .url("http://3.70.133.202:8080/app")
-            //.url("http://192.168.1.34:9000/app")
+            //.url("http://3.70.133.202:8080/app")
+            .url("http://192.168.1.218:9000/app")
             .post(requestBody)
             .build();
     okHttpClient.newCall(request)
@@ -363,8 +363,8 @@ private void buttonAnimation(){
                 .build();
 
         Request request = new Request.Builder()
-                .url("http://3.70.133.202:8080/app?emotions=" + emotions)
-                //.url("http://192.168.1.34:9000/app?emotions=" + emotions)
+                //.url("http://3.70.133.202:8080/app?emotions=" + emotions)
+                .url("http://192.168.1.218:9000/app?emotions=" + emotions)
                 .put(new RequestBody() {
                     @Override
                     public MediaType contentType() {
