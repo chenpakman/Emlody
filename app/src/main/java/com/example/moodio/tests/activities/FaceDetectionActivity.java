@@ -46,12 +46,12 @@ public class FaceDetectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_face_detection);
+        //setContentView(R.layout.activity_face_detection);
 
         // Keep the screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        cameraView = findViewById(R.id.camera_view);
+        //cameraView = findViewById(R.id.camera_view);
 
         // Check camera permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)

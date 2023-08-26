@@ -10,6 +10,8 @@ public class ResponseServer {
    private String emotion;
    private String imageUrl;
 
+   private String defaultMixName;
+
     public void setEmotion(String emotion) {
         this.emotion = emotion;
     }
@@ -52,5 +54,13 @@ public class ResponseServer {
         }
 
         this.playlistsUrls.put(emotion, playlistUrl);
+    }
+
+    public String getDefaultMixName() {
+        return defaultMixName;
+    }
+
+    public void setDefaultMixName(String defaultMixName) {
+        this.defaultMixName = defaultMixName;
     }
 }

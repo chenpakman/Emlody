@@ -3,18 +3,24 @@ package com.example.moodio.tests.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 import android.Manifest;
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
-import android.media.ExifInterface;
 import android.media.Image;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -66,36 +72,10 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
     private static final String GIF_URL = "file:///android_res/drawable/sound.gif";
     private WebView boomboxWebView;
 
-    private String TITLE = "Currently playing the ";
+    private String TITLE = "Currently playing a ";
 
     private TextView title;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mSpotifyManager.initializeSpotify();
-    }
-
-
-
-    @Override
-    protected void onStop() {
-        mSpotifyManager.stopMusic();
-        super.onStop();
-        mSpotifyManager.disconnect();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    /*@Override
-    protected void onResume() {
-        super.onResume();
-        mSpotifyManager.resumeMusic();
-    }*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +92,8 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         webSettings.setUseWideViewPort(true);
         boomboxWebView.loadUrl(GIF_URL);
 
+        //authenticateUser();
+
         //TODO ask for camera permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ) {
@@ -126,6 +108,39 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
             setFragment();
         }
     }
+            @Override
+    protected void onStart() {
+        super.onStart();
+        mSpotifyManager.initializeSpotify();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSpotifyManager.disconnect();
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mSpotifyManager.disconnect();
+
+    }
+
+/*
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSpotifyManager.stopMusic();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSpotifyManager.resumeMusic();
+    }*/
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -139,8 +154,23 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         }
     }
 
+    public void updateTitle(String currentMix){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TITLE = getString(R.string.currently_playing_mix, currentMix);
+                title.setText(TITLE);
+            }
+        });
+
+    }
+
     //TODO fragment which show llive footage from camera
     int previewHeight = 0, previewWidth = 0;
+
+    private static final String CHANNEL_ID = "camera_channel_id";
+
+    private boolean showedNotification = false;
 
     protected void setFragment(){
         String cameraId = null;
@@ -168,6 +198,34 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         camera2Fragment.setCamera(cameraId);
         fragment = camera2Fragment;
         getFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+        showCameraRunningNotification();
+
+    }
+    private void showCameraRunningNotification() {
+        if(!showedNotification) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Camera Channel", NotificationManager.IMPORTANCE_HIGH);
+                notificationManager.createNotificationChannel(channel);
+            }
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.bell) // Replace with your app's icon
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_camera)) // Large icon for expanded view
+                    .setContentTitle("Camera is Running")
+                    .setContentText("The camera is currently running in the background.")
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText("The camera is currently running in the background."))
+                    .setPriority(NotificationCompat.PRIORITY_HIGH) // High priority to make the notification more noticeable
+                    .setAutoCancel(true); // Auto cancel the notification when clicked
+
+            // You can add actions to the notification here if needed
+
+            Notification notification = builder.build();
+
+            notificationManager.notify(1, notification); // The second argument is the notification ID
+            showedNotification = true;
+        }
     }
 
     private String findFrontCameraId() {
@@ -311,6 +369,7 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
             Frame frame = new Frame.Builder().setBitmap(rgbFrameBitmap).build();
             SparseArray<Face> faces = detector.detect(frame);
             if(faces.size() > 0){
+                Log.d("LiveCameraActivity", "FACE DETECTED ");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -331,13 +390,11 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                 // Compress and save the rotated image
                 try {
                     FileOutputStream outputStream = new FileOutputStream("output_path.jpg");
-                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream);
+                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
                     outputStream.close();
                 }catch (IOException e){
-
+                    Log.e("LiveCameraActivity", "couldn't rotate image. " + e.getMessage(), e);
                 }
-
-                Log.d("LiveCameraActivity", "FACE DETECTED ");
 
                 File imageFile = saveBitmapToFile(rotatedBitmap);
                 Log.d("LiveCameraActivity", "created file from bitmap " + imageFile.getPath());
@@ -350,30 +407,6 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
 
         postInferenceCallback.run();
 
-    }
-
-    public int getImageOrientation(String imagePath) {
-        try {
-            ExifInterface exif = new ExifInterface(imagePath);
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            return getRotationAngleForOrientation(orientation);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    private int getRotationAngleForOrientation(int orientation) {
-        switch (orientation) {
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                return 90;
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                return 180;
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                return 270;
-            default:
-                return 0;
-        }
     }
 
 
@@ -430,7 +463,7 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                     .enqueue(new Callback() {
                         @Override
                         public void onFailure(@NonNull final Call call, @NonNull IOException e) {
-                            Log.e("LiveCameraActivity", "couldnt connect to server " + e.getMessage());
+                            Log.e("LiveCameraActivity", "couldn't connect to server " + e.getMessage());
 
                         }
 
@@ -441,7 +474,7 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                                 Gson gson = new Gson(); // Or use new GsonBuilder().create();
                                 ResponseServer serverResponse = gson.fromJson(responseBody, ResponseServer.class);
                                 if (response.code() == 200) {
-                                    mSpotifyManager.playPlaylist(serverResponse.getDefaultPlaylistUrl(), serverResponse.getEmotion());
+                                    mSpotifyManager.playPlaylist(serverResponse.getDefaultMixName(), serverResponse.getDefaultPlaylistUrl(), serverResponse.getEmotion());
                                     Log.d("LiveCameraActivity", "Retrieved playlist");
 
                                 } else if (response.code() == 204) {

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Moodio</string>
     <string name="playlists_title">Here are your playlists</string>
-    <string name="currently_playing_the_s_mix_enjoy">Currently Playing the %s Mix. Enjoy!</string>
+    <string name="currently_playing_mix">Currently Playing the %s Mix for ya.</string>
 </resources>

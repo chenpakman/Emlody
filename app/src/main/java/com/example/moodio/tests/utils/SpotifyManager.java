@@ -1,10 +1,10 @@
 package com.example.moodio.tests.utils;
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.moodio.Utils.ResponseServer;
+import com.example.moodio.tests.activities.LiveCameraActivity;
 import com.google.gson.Gson;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -31,10 +31,10 @@ import okio.BufferedSink;
 public class SpotifyManager {
 
     private static final String CLIENT_ID = "2e42b3849b9d491790d9abf8bf66f16e";
-    private static final String REDIRECT_URI = "https://www.google.com"; // Set this up on Spotify Developer Dashboard
+    private static final String REDIRECT_URI = "https://www.google.com";
     private SpotifyAppRemote mSpotifyAppRemote;
 
-    private Context mContext;
+    private LiveCameraActivity mContext;
     private OkHttpClient mHttpClient;
 
     private String currentEmotion;
@@ -43,7 +43,7 @@ public class SpotifyManager {
 
     private String DEFAULT_PLAYLIST = "";
 
-    public SpotifyManager(Context context) {
+    public SpotifyManager(LiveCameraActivity context) {
         mContext = context;
         currentEmotion = DEFAULT_EMOTION;
         mHttpClient = new OkHttpClient.Builder()
@@ -54,6 +54,7 @@ public class SpotifyManager {
     }
 
     public void initializeSpotify() {
+        //disconnect();
         ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
                 .setRedirectUri(REDIRECT_URI)
                 .showAuthView(true)
@@ -65,9 +66,7 @@ public class SpotifyManager {
                 mSpotifyAppRemote = spotifyAppRemote;
                 // You're connected to Spotify!
                 Log.d("SpotifyManager", "Connected to spotify!");
-
-                // Now you can start interacting with App Remote
-                getPlaylist(DEFAULT_EMOTION);;
+                getPlaylist(DEFAULT_EMOTION);
             }
 
             @Override
@@ -75,27 +74,11 @@ public class SpotifyManager {
                 Log.e("SpotifyManager", "Failed to connect to spotify " + throwable.getMessage(), throwable);
             }
         });
+
     }
 
-    public void playPlaylist(String playlistURL, String detectedEmotion) {
-        /*if(!Objects.equals(currentEmotion, responseServer.getEmotion())){
-            currentEmotion = responseServer.getEmotion();
-            Playlist defaultPlaylist = new Playlist(responseServer.getDefaultPlaylistUrl(), null);
-            URL url = new URL(
-                    Objects.requireNonNull(
-                            Objects.requireNonNull(
-                                    responseServer
-                                            .getPlaylistsUrls()
-                                            .getOrDefault(currentEmotion, defaultPlaylist)
-                                    )
-                            .getDefaultPlaylistUrl()
-            ));
+    public void playPlaylist(String mixName, String playlistURL, String detectedEmotion) {
 
-            String playlistUri = url.getPath();
-            playlistUri = playlistUri.replace("/",":");
-            Log.d("SpotifyManager", "About to play " + playlistUri);
-            connected(playlistUri);
-        }*/
         try{
             if(!Objects.equals(currentEmotion, detectedEmotion)){
                 currentEmotion = detectedEmotion;
@@ -104,6 +87,7 @@ public class SpotifyManager {
                 playlistUri = playlistUri.replace("/",":");
                 Log.d("SpotifyManager", "About to play " + playlistUri);
                 connected(playlistUri);
+                mContext.updateTitle(mixName);
             }
 
         } catch (MalformedURLException e) {
@@ -161,8 +145,8 @@ public class SpotifyManager {
                         DEFAULT_PLAYLIST = url.getPath();
                         DEFAULT_PLAYLIST = DEFAULT_PLAYLIST.replace("/",":");
                         Log.d("SpotifyManager", "Retrieved spotify link: " + DEFAULT_PLAYLIST);
-
                         connected(DEFAULT_PLAYLIST);
+                        mContext.updateTitle(DEFAULT_EMOTION);
 
                     }
                     response.close();
@@ -175,31 +159,40 @@ public class SpotifyManager {
     }
 
     public void disconnect() {
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        if(null != mSpotifyAppRemote) {
+            SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        }
     }
 
     public void stopMusic() {
-        mSpotifyAppRemote.getPlayerApi()
-                .subscribeToPlayerState()
-                .setEventCallback(playerState -> {
+        if(null != mSpotifyAppRemote && mSpotifyAppRemote.isConnected()) {
+            mSpotifyAppRemote.getPlayerApi()
+                    .subscribeToPlayerState()
+                    .setEventCallback(playerState -> {
 
-                    if(!playerState.isPaused){
-                        mSpotifyAppRemote.getPlayerApi().pause();
-                    }
-                });
+                        if (!playerState.isPaused) {
+                            mSpotifyAppRemote.getPlayerApi().pause();
+                            Log.d("SpotifyManager", "Paused music.\n");
+                        }
+                    });
+
+        }
 
     }
 
     public void resumeMusic() {
-        mSpotifyAppRemote.getPlayerApi()
-                .subscribeToPlayerState()
-                .setEventCallback(playerState -> {
+        if(null != mSpotifyAppRemote && mSpotifyAppRemote.isConnected()) {
+            mSpotifyAppRemote.getPlayerApi()
+                    .subscribeToPlayerState()
+                    .setEventCallback(playerState -> {
 
-                    if(playerState.isPaused){
-                        mSpotifyAppRemote.getPlayerApi().resume();
-                    }
+                        if (playerState.isPaused) {
+                            mSpotifyAppRemote.getPlayerApi().resume();
+                            Log.d("SpotifyManager", "Resumed music");
+                        }
 
-                });
+                    });
+        }
     }
 
     //TODO: response.close() to all HTTP responses with body

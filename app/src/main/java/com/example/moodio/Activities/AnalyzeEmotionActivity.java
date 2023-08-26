@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ import com.example.moodio.LoadingAlert;
 import com.example.moodio.R;
 import com.example.moodio.Utils.RealPathUtil;
 import com.example.moodio.Utils.ResponseServer;
+import com.example.moodio.tests.activities.LiveCameraActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.fitness.Fitness;
@@ -72,6 +74,8 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     private File imageFile;
     private Button galleryFloatingActionButton;
     private Button cameraFloatingActionButton;
+
+    private Button liveStreamFloatingActionButton;
     GoogleSignInAccount account;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +86,18 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         checkForPermission();
         cameraFloatingActionButton=findViewById(R.id.cameraFloatingActionButton);
         galleryFloatingActionButton=findViewById(R.id.floatingActionButton);
+        liveStreamFloatingActionButton = findViewById(R.id.liveCameraActionButton);
         title=findViewById(R.id.vibesTextView);
+        liveStreamFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AnalyzeEmotionActivity.this, LiveCameraActivity.class);
+                startActivity(intent);
+            }
+        });
         buttonList.add(cameraFloatingActionButton);
         buttonList.add(galleryFloatingActionButton);
+        buttonList.add(liveStreamFloatingActionButton);
         imageView=findViewById(R.id.choosenImageView);
         imageUri=createUri();
         buttonAnimation();
