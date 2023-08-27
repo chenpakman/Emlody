@@ -1,6 +1,7 @@
 package com.example.moodio;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class EmotionNotFoundDialog extends Dialog implements View.OnClickListener {
 
-    private AnalyzeEmotionActivity activity;
+    private MeasureHeartbeatActivity activity;
 
     private Dialog dialog;
     private TextView tellText, goBackText, doneText;
@@ -34,7 +35,7 @@ public class EmotionNotFoundDialog extends Dialog implements View.OnClickListene
 
     ListView emotionsListView;
 
-    public EmotionNotFoundDialog(@NonNull AnalyzeEmotionActivity activity) {
+    public EmotionNotFoundDialog(@NonNull MeasureHeartbeatActivity activity) {
         super(activity);
         this.activity = activity;
     }
@@ -45,6 +46,8 @@ public class EmotionNotFoundDialog extends Dialog implements View.OnClickListene
         switch (v.getId()) {
             case R.id.cancel_text:
                 this.dismiss();
+                Intent intent=new Intent(this.activity, AnalyzeEmotionActivity.class);
+                activity.startActivity(intent);
                 break;
             case R.id.okay_text:
                 this.showEmotionsDialog();

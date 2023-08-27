@@ -16,7 +16,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-
     buildTypes {
         release {
             minifyEnabled false
@@ -41,6 +40,9 @@ dependencies {
     implementation 'androidx.camera:camera-view:1.2.3'
     implementation 'com.google.android.things:androidthings:1.0'
     implementation 'androidx.lifecycle:lifecycle-service:2.4.1'
+    implementation files('libs\\samsung-health-sdk-for-android-20201103\\samsung-health-sdk-for-android-20201103\\service-v1.4.0(deprecated)\\libs\\samsung-health-service-v1.4.0.jar')
+    implementation files('libs\\samsung-health-sdk-for-android-20201103\\samsung-health-sdk-for-android-20201103\\service-v1.4.0(deprecated)\\libs\\sdk-v1.0.0.jar')
+    implementation files('libs/samsung-health-data-1.5.0.aar')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

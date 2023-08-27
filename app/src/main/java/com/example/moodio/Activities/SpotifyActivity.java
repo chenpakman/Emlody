@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.moodio.R;
 
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,5 +101,3 @@ public class SpotifyActivity extends AppCompatActivity {
         return sb.substring(0, sb.length() - 1);
     }
 }
-
-

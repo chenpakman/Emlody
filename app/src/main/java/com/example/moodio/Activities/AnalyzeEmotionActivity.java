@@ -1,16 +1,17 @@
 package com.example.moodio.Activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,14 +25,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.example.moodio.EmotionNotFoundDialog;
-import com.example.moodio.LoadingAlert;
-import com.example.moodio.R;
-import com.example.moodio.Utils.RealPathUtil;
-import com.example.moodio.Utils.ResponseServer;
-import com.example.moodio.tests.activities.LiveCameraActivity;
+import com.example.emlody.EmotionNotFoundDialog;
+import com.example.emlody.LoadingAlert;
+import com.example.emlody.R;
+import com.example.emlody.Utils.RealPathUtil;
+import com.example.emlody.Utils.ResponseServer;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
 import com.google.android.gms.fitness.data.Bucket;
@@ -42,6 +44,7 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.request.DataSourcesRequest;
+import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -71,12 +74,15 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     private Uri imageUri;
     private ImageView imageView;
     private TextView title;
+
     private File imageFile;
     private Button galleryFloatingActionButton;
     private Button cameraFloatingActionButton;
 
     private Button liveStreamFloatingActionButton;
-    GoogleSignInAccount account;
+    private SharedViewModel sharedViewModel;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +90,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.BLACK);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         checkForPermission();
+        sharedViewModel = SharedViewModelFactory.getInstance();
         cameraFloatingActionButton=findViewById(R.id.cameraFloatingActionButton);
         galleryFloatingActionButton=findViewById(R.id.floatingActionButton);
         liveStreamFloatingActionButton = findViewById(R.id.liveCameraActionButton);
@@ -103,121 +110,19 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         buttonAnimation();
         registerPictureCameraLauncher();
         registerPictureGalleryLauncher();
-        FitnessOptions fitnessOptions = FitnessOptions.builder()
-                .addDataType(DataType.TYPE_HEART_RATE_BPM, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.AGGREGATE_HEART_POINTS, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.AGGREGATE_LOCATION_BOUNDING_BOX,FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-                .build();
-
-        account = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
-        if (!GoogleSignIn.hasPermissions(account, fitnessOptions)) {
-            GoogleSignIn.requestPermissions(
-                    this, // your activity
-                    1, // e.g. 1
-                    account,
-                    fitnessOptions);
-        } else {
-          //accessGoogleFit(fitnessOptions,account);
-            //measureHeartRate(account);
-        }
-
-
         cameraFloatingActionButton.setOnClickListener(v -> checkCameraPermissionsAndOpenCamera());
         galleryFloatingActionButton.setOnClickListener(v -> {
             Intent iGallery = new Intent(Intent.ACTION_PICK);
             iGallery.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             imageLauncher.launch("image/*");
         });
-
     }
-
-
-    private SensorEventListener sensorListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            // Process heart rate data
-            float heartRate = event.values[0];
-            System.out.println("measured! "+heartRate);
-            // Handle heart rate value
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // Handle accuracy changes if needed
-        }
-    };
-private void checkForSensors()
-{
-    FitnessOptions fitnessOptions = FitnessOptions.builder().addDataType(DataType.TYPE_STEP_COUNT_DELTA).build();
-
-// Note: Fitness.SensorsApi.findDataSources() requires the
-// ACCESS_FINE_LOCATION permission.
-    Fitness.getSensorsClient(getApplicationContext(), GoogleSignIn.getAccountForExtension(getApplicationContext(), fitnessOptions))
-            .findDataSources(
-                    new DataSourcesRequest.Builder()
-                            .setDataTypes(DataType.TYPE_STEP_COUNT_DELTA)
-                            .setDataSourceTypes(DataSource.TYPE_RAW)
-                            .build())
-            .addOnSuccessListener(dataSources -> {
-                dataSources.forEach(dataSource -> {
-                    System.out.println("Data source found: ${it.streamIdentifier}");
-                    System.out.println("Data Source type: ${it.dataType.name}");
-
-                    if (dataSource.getDataType() == DataType.TYPE_STEP_COUNT_DELTA) {
-                        System.out.println( "Data source for STEP_COUNT_DELTA found!");
-
-                    }
-                });})
-            .addOnFailureListener(e ->
-                    System.out.println("Find data sources request failed"+ e.getMessage()));
-}
-
-    private void accessGoogleFit(FitnessOptions fitnessOptions, GoogleSignInAccount account) {
-
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            LocalDateTime end = LocalDateTime.now();
-            LocalDateTime start= end.minusYears(1);
-           /* long endSeconds = end.atZone(ZoneId.systemDefault()).toEpochSecond();
-            long startSeconds = start.atZone(ZoneId.systemDefault()).toEpochSecond();*/
-            long endTime = System.currentTimeMillis();  // Current time
-            long startTime = endTime - TimeUnit.DAYS.toMillis(20);
-            DataReadRequest readRequest = new DataReadRequest.Builder()
-                    .aggregate(DataType.TYPE_HEART_RATE_BPM)
-                    .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-                    .bucketByTime(1, TimeUnit.DAYS)
-                    .enableServerQueries()
-                    .build();
-            Fitness.getHistoryClient(this, account)
-                    .readData(readRequest)
-                    .addOnSuccessListener(res->
-                            getHeartHistory(res.getBuckets())
-                    )
-                    .addOnFailureListener( e -> System.out.println("error!"+e));
-                 }
-    }
-
-
-
-private void getHeartHistory(List<Bucket> buckets){
-    for (Bucket bucket : buckets) {
-        List<DataSet> dataSets = bucket.getDataSets();
-        for (DataSet dataSet : dataSets) {
-            for (DataPoint dataPoint : dataSet.getDataPoints()) {
-                float heartRate = dataPoint.getValue(Field.FIELD_AVERAGE).asFloat();
-                System.out.println("heartRate"+heartRate);
-            }
-        }
-    }
-
-}
 
 private Uri createUri(){
         imageFile=new File(getApplicationContext().getFilesDir(),"camera_photo.jpg");
         return FileProvider.getUriForFile(
                 getApplicationContext(),
-                "com.example.moodio.fileProvider", imageFile
+                "com.example.emlody.fileProvider", imageFile
         );
 }
 
@@ -296,12 +201,14 @@ private void checkCameraPermissionsAndOpenCamera(){
 
     protected void selectFromGallery() {
         LoadingAlert loadingAlert =new LoadingAlert(AnalyzeEmotionActivity.this);
-        runOnUiThread(() -> loadingAlert.startAlertDialog());
+        //runOnUiThread(() -> loadingAlert.startAlertDialog());
         uploadImageToServer(imageFile, loadingAlert);
      }
 
     private void uploadImageToServer( File file ,LoadingAlert loadingAlert){
-    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+        Intent intent=new Intent(AnalyzeEmotionActivity.this, MeasureHeartbeatActivity.class);
+        sharedViewModel.setServerResponse(null);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
@@ -320,8 +227,8 @@ private void checkCameraPermissionsAndOpenCamera(){
             .enqueue(new Callback() {
                 @Override
                 public void onFailure(@NonNull final Call call, @NonNull IOException e) {
+                    sharedViewModel.setPostServerResponse("e");
                     runOnUiThread(() -> {
-                        loadingAlert.closeAlertDialog();
                         Toast.makeText(AnalyzeEmotionActivity.this, "Something went wrong, please try again." + e.getMessage(), Toast.LENGTH_LONG).show();
 
                     });
@@ -330,32 +237,31 @@ private void checkCameraPermissionsAndOpenCamera(){
                 public void onResponse(@NonNull Call call, final Response response) throws IOException {
                     if(response.body()!=null){
                         String url = response.body().string();
+
                         if (response.code() == 200) {
-                            runOnUiThread(() -> {
-                                loadingAlert.closeAlertDialog();
-                                Intent intent = new Intent(AnalyzeEmotionActivity.this, PlaylistsActivity.class);
-                                intent.putExtra("EXTRA_MESSAGE", url);
-                                startActivity(intent);
-                            });
+                            sharedViewModel.setPostServerResponse(url);
+                            System.out.println("setServerResponse!");
+
                         }
                         else if(response.code() == 204) {
-                            runOnUiThread(() -> {
-                                loadingAlert.closeAlertDialog();
-                                EmotionNotFoundDialog dialog = new EmotionNotFoundDialog(AnalyzeEmotionActivity.this);
-                                dialog.show();
-                            });
+                            sharedViewModel.setPostServerResponse("e");
+
 
                         }
                         else{
+
                             Gson gson = new Gson(); // Or use new GsonBuilder().create();
                             ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
                             runOnUiThread(() -> {
-                                loadingAlert.closeAlertDialog();
+                               // loadingAlert.closeAlertDialog();
                                 Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
                             });
                         }
                 }
             }});
+        runOnUiThread(() -> {
+            startActivity(intent);
+        });
     }
 
 
@@ -367,7 +273,7 @@ private void buttonAnimation(){
         b.animate().alpha(1f).translationYBy(-1000).setDuration(1500);
     }
 }
-    public void requestPlayLists(String emotions) {
+    /*public void requestPlayLists(String emotions) {
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(60, TimeUnit.SECONDS)
@@ -420,8 +326,8 @@ private void buttonAnimation(){
                         }
                 }}  );
     }
-
-}
+*/
+    }
 
 
 
