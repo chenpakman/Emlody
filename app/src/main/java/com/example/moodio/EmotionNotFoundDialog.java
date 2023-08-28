@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.example.moodio.Activities.AnalyzeEmotionActivity;
-import com.example.moodio.Activities.MeasureHeartbeatActivity;
+import com.example.moodio.activities.AnalyzeEmotionActivity;
+import com.example.moodio.activities.MeasureHeartbeatActivity;
 
 import java.util.ArrayList;
 import java.util.List;

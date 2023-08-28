@@ -1,4 +1,4 @@
-package com.example.moodio.tests.utils;
+package com.example.moodio.utils;
 
 
 import android.graphics.Bitmap;

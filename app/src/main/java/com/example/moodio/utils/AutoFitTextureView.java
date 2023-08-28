@@ -1,4 +1,4 @@
-package com.example.moodio.tests.utils;
+package com.example.moodio.utils;
 /*
  * Copyright 2019 The TensorFlow Authors. All Rights Reserved.
  *

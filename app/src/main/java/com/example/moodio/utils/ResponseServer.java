@@ -1,4 +1,4 @@
-package com.example.moodio.Utils;
+package com.example.moodio.utils;
 
 import java.util.HashMap;
 import java.util.Map;

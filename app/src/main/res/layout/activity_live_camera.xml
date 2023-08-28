@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".tests.activities.LiveCameraActivity"
+    tools:context=".activities.LiveCameraActivity"
     android:background="@drawable/background">
 
 
@@ -72,7 +72,7 @@
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".tests.activities.LiveCameraActivity">
+        tools:context=".activities.LiveCameraActivity">
         <!-- android:background="@android:color/black"-->
 
     </FrameLayout>

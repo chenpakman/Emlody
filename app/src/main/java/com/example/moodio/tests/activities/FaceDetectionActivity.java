@@ -13,9 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.example.moodio.Activities.PlaylistsActivity;
-import com.example.moodio.R;
-import com.example.moodio.Utils.ResponseServer;
+import com.example.moodio.activities.PlaylistsActivity;
+import com.example.moodio.utils.ResponseServer;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.face.Face;

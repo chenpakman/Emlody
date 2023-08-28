@@ -1,10 +1,10 @@
-package com.example.moodio.tests.utils;
+package com.example.moodio.utils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.moodio.Utils.ResponseServer;
-import com.example.moodio.tests.activities.LiveCameraActivity;
+import com.example.moodio.utils.ResponseServer;
+import com.example.moodio.activities.LiveCameraActivity;
 import com.google.gson.Gson;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;

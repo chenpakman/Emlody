@@ -1,4 +1,4 @@
-package com.example.moodio.Activities;
+package com.example.moodio.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +20,7 @@ import com.example.moodio.LoadingAlert;
 import com.example.moodio.R;
 import com.example.moodio.SharedViewModel;
 import com.example.moodio.SharedViewModelFactory;
-import com.example.moodio.Utils.ResponseServer;
+import com.example.moodio.utils.ResponseServer;
 import com.google.gson.Gson;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.example.moodio.Utils;
+package com.example.moodio.utils;
 
 public class Playlist {
     String playlistUrl;

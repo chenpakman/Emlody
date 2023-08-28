@@ -1,4 +1,4 @@
-package com.example.moodio.Activities;
+package com.example.moodio.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.moodio.R;
-import com.example.moodio.tests.activities.LiveCameraActivity;
 
 public class MainActivity extends AppCompatActivity {
 

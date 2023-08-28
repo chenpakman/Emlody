@@ -1,5 +1,5 @@
 
-package com.example.moodio.Activities;
+package com.example.moodio.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.moodio.R;
 
-import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 

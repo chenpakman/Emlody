@@ -41,27 +41,27 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".tests.activities.LiveCameraActivity"
-            android:parentActivityName=".Activities.MainActivity"
+            android:name=".activities.LiveCameraActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:exported="false"/>
 
         <activity
-            android:name=".Activities.MeasureHeartbeatActivity"
+            android:name=".activities.MeasureHeartbeatActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.PlaylistsActivity"
+            android:name=".activities.PlaylistsActivity"
             android:exported="false"
-            android:parentActivityName=".Activities.AnalyzeEmotionActivity" />
+            android:parentActivityName=".activities.AnalyzeEmotionActivity" />
         <activity
-            android:name=".Activities.SpotifyActivity"
+            android:name=".activities.SpotifyActivity"
             android:exported="false"
-            android:parentActivityName=".Activities.PlaylistsActivity" />
+            android:parentActivityName=".activities.PlaylistsActivity" />
         <activity
-            android:name=".Activities.AnalyzeEmotionActivity"
+            android:name=".activities.AnalyzeEmotionActivity"
             android:exported="false"
-            android:parentActivityName=".Activities.MainActivity" />
+            android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
