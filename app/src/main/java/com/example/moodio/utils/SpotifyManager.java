@@ -30,8 +30,8 @@ import okio.BufferedSink;
 
 public class SpotifyManager {
 
-    private static final String CLIENT_ID = "2e42b3849b9d491790d9abf8bf66f16e";
-    private static final String REDIRECT_URI = "https://www.google.com";
+    private static final String CLIENT_ID = "";
+    private static final String REDIRECT_URI = "";
     private SpotifyAppRemote mSpotifyAppRemote;
 
     private LiveCameraActivity mContext;
