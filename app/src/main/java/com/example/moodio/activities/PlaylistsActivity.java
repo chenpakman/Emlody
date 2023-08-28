@@ -1,4 +1,4 @@
-package com.example.emlody.Activities;
+package com.example.moodio.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,15 +10,14 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.emlody.PlayListAdapter;
-import com.example.emlody.PlaylistInfo;
-import com.example.emlody.R;
-import com.example.emlody.Utils.Playlist;
-import com.example.emlody.Utils.ResponseServer;
+import com.example.moodio.PlayListAdapter;
+import com.example.moodio.PlaylistInfo;
+import com.example.moodio.R;
+import com.example.moodio.utils.Playlist;
+import com.example.moodio.utils.ResponseServer;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Map;
 
 public class PlaylistsActivity extends AppCompatActivity {
@@ -41,13 +40,13 @@ public class PlaylistsActivity extends AppCompatActivity {
         String playlistsJson = getIntent().getStringExtra("EXTRA_MESSAGE");
         Gson gson = new Gson();
         ResponseServer res = gson.fromJson(playlistsJson, ResponseServer.class);
-        TextView title =findViewById(R.id.playlistTitle);
-        title.setText("The detected emotion is "+ res.getEmotion().toLowerCase(Locale.ROOT)+"\n Here are your playlists:\n");
+        TextView title = findViewById(R.id.playlistTitle);
+        String titleText = getString(R.string.playlists_title, res.getEmotion());
+        title.setText(titleText);
         playListAdapter=new PlayListAdapter(this,R.layout.list_row,playlistsArray);
         playListsListView.setAdapter(playListAdapter);
 
         addPlaylists(res);
-        System.out.println("On create PlaylistActivity");//ToDo:delete
 
     }
 private void addPlaylists(ResponseServer res){
@@ -73,6 +72,12 @@ private void addPlaylists(ResponseServer res){
     playListAdapter.notifyDataSetChanged();
 }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, AnalyzeEmotionActivity.class);
+        startActivity(intent);
+        finish(); // Optional, to remove the current activity from the stack
+    }
 
 
 

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:contentDescription="@android:string/emptyPhoneNumber"
-    tools:context=".Activities.AnalyzeEmotionActivity">
+    tools:context=".activities.AnalyzeEmotionActivity">
 
     <!-- <Button
         android:id="@+id/floatingActionButton"
@@ -38,7 +38,7 @@
 -->
 
     <ImageView
-        android:id="@+id/choosenImageView"
+        android:id="@+id/chosenImageView"
         android:layout_width="300dp"
         android:layout_height="300dp"
 
@@ -57,7 +57,7 @@
         android:background="@drawable/button"
         android:drawableLeft="@drawable/upload_img"
         android:paddingHorizontal="60dp"
-        android:text="Upload image"
+        android:text="@string/upload_image"
         android:textAllCaps="false"
 
         android:textColor="#FFFFFF"
@@ -76,7 +76,7 @@
         android:background="@drawable/bg_rounded"
         android:drawableLeft="@drawable/ic_camera"
         android:paddingHorizontal="55dp"
-        android:text="Take a picture"
+        android:text="@string/take_a_picture"
 
         android:textAllCaps="false"
 
@@ -86,6 +86,27 @@
         app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/floatingActionButton"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/liveCameraActionButton"
+        android:layout_width="269dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="72dp"
+        android:background="@drawable/bg_rounded"
+        android:drawableLeft="@drawable/ic_camera"
+        android:paddingHorizontal="50dp"
+        android:text="@string/start_live_stream"
+
+        android:textAllCaps="false"
+
+        android:textColor="#FFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cameraFloatingActionButton"
         app:layout_constraintVertical_bias="0.088"
         tools:ignore="MissingConstraints" />
 
@@ -93,13 +114,13 @@
         android:id="@+id/vibesTextView"
         android:layout_width="345dp"
         android:layout_height="128dp"
-        android:text="Capture the vibes, feel the energy, and let the tunes work their magic!"
+        android:text="@string/capture_the_vibes_title"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="25dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/choosenImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/chosenImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.428"
         app:layout_constraintStart_toStartOf="parent"

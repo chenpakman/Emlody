@@ -1,4 +1,4 @@
-package com.example.emlody.Activities;
+package com.example.moodio.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,12 +15,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.emlody.EmotionNotFoundDialog;
-import com.example.emlody.LoadingAlert;
-import com.example.emlody.R;
-import com.example.emlody.SharedViewModel;
-import com.example.emlody.SharedViewModelFactory;
-import com.example.emlody.Utils.ResponseServer;
+import com.example.moodio.EmotionNotFoundDialog;
+import com.example.moodio.LoadingAlert;
+import com.example.moodio.R;
+import com.example.moodio.SharedViewModel;
+import com.example.moodio.SharedViewModelFactory;
+import com.example.moodio.utils.ResponseServer;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -135,7 +135,9 @@ public class MeasureHeartbeatActivity extends AppCompatActivity {
 
         Request request = new Request.Builder()
                 //.url("http://3.70.133.202:8080/app?emotions=" + emotions)
-                .url("http://192.168.1.35:8080/app?emotions=" + emotions)
+                //.url("http://192.168.1.35:8080/app?emotions=" + emotions)
+                .url("http://192.168.1.218:9000/app?emotions=" + emotions)
+
                 .put(new RequestBody() {
                     @Override
                     public MediaType contentType() {
@@ -166,6 +168,7 @@ public class MeasureHeartbeatActivity extends AppCompatActivity {
                                     Intent intent = new Intent(MeasureHeartbeatActivity.this, PlaylistsActivity.class);
                                     intent.putExtra("EXTRA_MESSAGE", url);
                                     startActivity(intent);
+                                    finish();
                                 });
                             }
                             else{

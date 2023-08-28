@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.emlody'
+    namespace 'com.example.moodio'
     compileSdk 33
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
-        applicationId "com.example.emlody"
+        applicationId "com.example.moodio"
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -35,6 +35,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation 'com.google.firebase:firebase-crashlytics-buildtools:2.8.1'
+    implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
+    implementation 'androidx.camera:camera-lifecycle:1.2.3'
+    implementation 'androidx.camera:camera-view:1.2.3'
+    implementation 'com.google.android.things:androidthings:1.0'
+    implementation 'androidx.lifecycle:lifecycle-service:2.4.1'
     implementation files('libs\\samsung-health-sdk-for-android-20201103\\samsung-health-sdk-for-android-20201103\\service-v1.4.0(deprecated)\\libs\\samsung-health-service-v1.4.0.jar')
     implementation files('libs\\samsung-health-sdk-for-android-20201103\\samsung-health-sdk-for-android-20201103\\service-v1.4.0(deprecated)\\libs\\sdk-v1.0.0.jar')
     implementation files('libs/samsung-health-data-1.5.0.aar')
@@ -52,4 +57,11 @@ dependencies {
     implementation("com.google.android.gms:play-services-fitness:21.1.0")
     implementation("com.google.android.gms:play-services-auth:20.5.0")
     implementation("com.squareup.picasso:picasso:2.71828");
+    implementation 'com.google.android.gms:play-services-vision:20.1.3'
+
+
+
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1' // HTTP client library
+    implementation files('../libs/spotify-app-remote-release-0.8.0.aar')
+
 }

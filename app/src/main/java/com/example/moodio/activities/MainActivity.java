@@ -1,4 +1,4 @@
-package com.example.emlody.Activities;
+package com.example.moodio.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,7 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
-import com.example.emlody.R;
+import com.example.moodio.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void generatePlaylistButtonClicked(View view){
         Intent intent=new Intent(MainActivity.this, AnalyzeEmotionActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 }

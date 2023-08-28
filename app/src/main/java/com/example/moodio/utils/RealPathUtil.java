@@ -1,4 +1,4 @@
-package com.example.emlody.Utils;
+package com.example.moodio.utils;
 
 import android.annotation.SuppressLint;
 import android.content.ContentUris;

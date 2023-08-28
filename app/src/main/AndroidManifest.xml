@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -12,36 +13,55 @@
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+
+
+
+
+
+
+
     <application
+
+
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:exported="true"
         android:fullBackupContent="@xml/backup_rules"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/music_icon_foreground"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Emlody"
+        android:theme="@style/Theme.Moodio"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
-            android:name=".Activities.MeasureHeartbeatActivity"
+            android:name=".activities.LiveCameraActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".activities.MeasureHeartbeatActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.PlaylistsActivity"
+            android:name=".activities.PlaylistsActivity"
             android:exported="false"
-            android:parentActivityName=".Activities.AnalyzeEmotionActivity" />
+            android:parentActivityName=".activities.AnalyzeEmotionActivity" />
         <activity
-            android:name=".Activities.SpotifyActivity"
+            android:name=".activities.SpotifyActivity"
             android:exported="false"
-            android:parentActivityName=".Activities.PlaylistsActivity" />
+            android:parentActivityName=".activities.PlaylistsActivity" />
         <activity
-            android:name=".Activities.AnalyzeEmotionActivity"
+            android:name=".activities.AnalyzeEmotionActivity"
             android:exported="false"
-            android:parentActivityName=".Activities.MainActivity" />
+            android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,7 +72,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.emlody.fileProvider"
+            android:authorities="com.example.moodio.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

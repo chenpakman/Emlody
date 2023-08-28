@@ -1,8 +1,7 @@
-package com.example.emlody;
+package com.example.moodio;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 
 public class LoadingAlert {

@@ -1,14 +1,16 @@
-package com.example.emlody.Utils;
+package com.example.moodio.utils;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ResponseServer {
    private Map<String, Playlist> playlistsUrls;
-   private String playlistUrl;
+   private String defaultPlaylistUrl;
    private String error;
    private String emotion;
    private String imageUrl;
+
+   private String defaultMixName;
 
     public void setEmotion(String emotion) {
         this.emotion = emotion;
@@ -22,8 +24,8 @@ public class ResponseServer {
         this.imageUrl = imageUrl;
     }
 
-    public void setPlaylistUrl(String playlistUrl) {
-        this.playlistUrl = playlistUrl;
+    public void setDefaultPlaylistUrl(String defaultPlaylistUrl) {
+        this.defaultPlaylistUrl = defaultPlaylistUrl;
     }
 
     public String getEmotion() {
@@ -38,8 +40,8 @@ public class ResponseServer {
         return error;
     }
 
-    public String getPlaylistUrl() {
-        return playlistUrl;
+    public String getDefaultPlaylistUrl() {
+        return defaultPlaylistUrl;
     }
 
     public Map<String, Playlist> getPlaylistsUrls() {
@@ -52,5 +54,13 @@ public class ResponseServer {
         }
 
         this.playlistsUrls.put(emotion, playlistUrl);
+    }
+
+    public String getDefaultMixName() {
+        return defaultMixName;
+    }
+
+    public void setDefaultMixName(String defaultMixName) {
+        this.defaultMixName = defaultMixName;
     }
 }

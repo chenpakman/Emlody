@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/imageView"
-        android:text="Please choose the options that best describe what you are feeling right now."
+        android:text="@string/emotions_options_title"
         android:textAlignment="center"
         android:textColor="#3F51B5"
         android:textSize="30sp"

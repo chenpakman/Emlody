@@ -1,14 +1,13 @@
-package com.example.emlody.Activities;
+package com.example.moodio.activities;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,44 +20,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.example.emlody.EmotionNotFoundDialog;
-import com.example.emlody.LoadingAlert;
-import com.example.emlody.R;
-import com.example.emlody.SharedViewModel;
-import com.example.emlody.SharedViewModelFactory;
-import com.example.emlody.Utils.RealPathUtil;
-import com.example.emlody.Utils.ResponseServer;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.FitnessOptions;
-import com.google.android.gms.fitness.data.Bucket;
-import com.google.android.gms.fitness.data.DataPoint;
-import com.google.android.gms.fitness.data.DataSet;
-import com.google.android.gms.fitness.data.DataSource;
-import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Field;
-import com.google.android.gms.fitness.request.DataReadRequest;
-import com.google.android.gms.fitness.request.DataSourcesRequest;
+
+import com.example.moodio.LoadingAlert;
+import com.example.moodio.R;
+import com.example.moodio.utils.RealPathUtil;
+import com.example.moodio.utils.ResponseServer;
+import com.example.moodio.SharedViewModel;
+import com.example.moodio.SharedViewModelFactory;
 import com.google.gson.Gson;
-import com.samsung.android.sdk.healthdata.HealthConnectionErrorResult;
-import com.samsung.android.sdk.healthdata.HealthConstants;
-import com.samsung.android.sdk.healthdata.HealthData;
-import com.samsung.android.sdk.healthdata.HealthDataResolver;
-import com.samsung.android.sdk.healthdata.HealthDataStore;
-import com.samsung.android.sdk.healthdata.HealthDevice;
-import com.samsung.android.sdk.healthdata.HealthDeviceManager;
-import com.samsung.android.sdk.healthdata.HealthPermissionManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -69,7 +45,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.BufferedSink;
 
 
 public class AnalyzeEmotionActivity extends AppCompatActivity {
@@ -85,7 +60,9 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
     private File imageFile;
     private Button galleryFloatingActionButton;
     private Button cameraFloatingActionButton;
-   private SharedViewModel sharedViewModel;
+
+    private Button liveStreamFloatingActionButton;
+    private SharedViewModel sharedViewModel;
 
 
     @Override
@@ -93,15 +70,24 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analyze_emotion);
         getWindow().setStatusBarColor(Color.BLACK);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         checkForPermission();
         sharedViewModel = SharedViewModelFactory.getInstance();
         cameraFloatingActionButton=findViewById(R.id.cameraFloatingActionButton);
         galleryFloatingActionButton=findViewById(R.id.floatingActionButton);
+        liveStreamFloatingActionButton = findViewById(R.id.liveCameraActionButton);
         title=findViewById(R.id.vibesTextView);
+        liveStreamFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AnalyzeEmotionActivity.this, LiveCameraActivity.class);
+                startActivity(intent);
+            }
+        });
         buttonList.add(cameraFloatingActionButton);
         buttonList.add(galleryFloatingActionButton);
-        imageView=findViewById(R.id.choosenImageView);
+        buttonList.add(liveStreamFloatingActionButton);
+        imageView=findViewById(R.id.chosenImageView);
         imageUri=createUri();
         buttonAnimation();
         registerPictureCameraLauncher();
@@ -118,7 +104,7 @@ private Uri createUri(){
         imageFile=new File(getApplicationContext().getFilesDir(),"camera_photo.jpg");
         return FileProvider.getUriForFile(
                 getApplicationContext(),
-                "com.example.emlody.fileProvider", imageFile
+                "com.example.moodio.fileProvider", imageFile
         );
 }
 
@@ -140,18 +126,20 @@ private void registerPictureCameraLauncher(){
 }
 private void registerPictureGalleryLauncher(){
     imageLauncher =registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
-        String path=RealPathUtil.getRealPath(AnalyzeEmotionActivity.this,result);
-        reorderUi(result);
-        imageFile=new File(path);
-        selectFromGallery();
+        if(null != result){
+            String path=RealPathUtil.getRealPath(AnalyzeEmotionActivity.this,result);
+            reorderUi(result);
+            imageFile=new File(path);
+            selectFromGallery();
+        }
     });
 }
 private void reorderUi(Uri imageUri){
   imageView.setImageURI(imageUri);
 
     title.animate().alpha(1f).y(100);
-    cameraFloatingActionButton.animate().alpha(1f).y(1960);
-    galleryFloatingActionButton.animate().alpha(1f).y(1710);
+    cameraFloatingActionButton.animate().alpha(1f).y(1560);
+    galleryFloatingActionButton.animate().alpha(1f).y(1310);
 }
 private void checkForPermission(){
     if (ContextCompat.checkSelfPermission(AnalyzeEmotionActivity.this, Manifest.permission.ACTIVITY_RECOGNITION)
@@ -212,11 +200,11 @@ private void checkCameraPermissionsAndOpenCamera(){
     ActivityCompat.requestPermissions(AnalyzeEmotionActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, GALLERY_REQ_CODE);
     RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("image", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
+            .addFormDataPart("image", file.getName(), RequestBody.create(file, MediaType.parse("application/octet-stream")))
             .build();
     Request request = new Request.Builder()
-            .url("http://192.168.1.35:8080/app")
             //.url("http://3.70.133.202:8080/app")
+            .url("http://192.168.1.218:9000/app")
             .post(requestBody)
             .build();
     okHttpClient.newCall(request)
@@ -279,7 +267,7 @@ private void buttonAnimation(){
 
         Request request = new Request.Builder()
                 //.url("http://3.70.133.202:8080/app?emotions=" + emotions)
-                .url("http://192.168.1.35:8080/app?emotions=" + emotions)
+                .url("http://192.168.1.218:9000/app?emotions=" + emotions)
                 .put(new RequestBody() {
                     @Override
                     public MediaType contentType() {

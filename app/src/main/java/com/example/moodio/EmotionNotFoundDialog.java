@@ -1,4 +1,4 @@
-package com.example.emlody;
+package com.example.moodio;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.example.emlody.Activities.AnalyzeEmotionActivity;
-import com.example.emlody.Activities.MeasureHeartbeatActivity;
+import com.example.moodio.activities.AnalyzeEmotionActivity;
+import com.example.moodio.activities.MeasureHeartbeatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +97,6 @@ public class EmotionNotFoundDialog extends Dialog implements View.OnClickListene
             }
         });
         this.emotionsListView.setAdapter(adapter);
-        doneText = findViewById(R.id.done_text);
 
         doneText.setOnClickListener(v -> {
 
@@ -105,7 +104,7 @@ public class EmotionNotFoundDialog extends Dialog implements View.OnClickListene
             for (String emotion:chosenEmotionsByUser) {
                 emotions += " " + emotion;
             }
-            emotions.trim();
+            emotions = emotions.trim();
             dismiss();
             this.activity.requestPlayLists(emotions);
 
