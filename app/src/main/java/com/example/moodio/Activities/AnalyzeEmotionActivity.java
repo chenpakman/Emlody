@@ -1,17 +1,13 @@
 package com.example.moodio.Activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,33 +21,21 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.example.emlody.EmotionNotFoundDialog;
-import com.example.emlody.LoadingAlert;
-import com.example.emlody.R;
-import com.example.emlody.Utils.RealPathUtil;
-import com.example.emlody.Utils.ResponseServer;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.FitnessOptions;
-import com.google.android.gms.fitness.data.Bucket;
-import com.google.android.gms.fitness.data.DataPoint;
-import com.google.android.gms.fitness.data.DataSet;
-import com.google.android.gms.fitness.data.DataSource;
-import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Field;
-import com.google.android.gms.fitness.request.DataReadRequest;
-import com.google.android.gms.fitness.request.DataSourcesRequest;
-import com.google.android.gms.fitness.request.SensorRequest;
+
+import com.example.moodio.LoadingAlert;
+import com.example.moodio.R;
+import com.example.moodio.Utils.RealPathUtil;
+import com.example.moodio.Utils.ResponseServer;
+import com.example.moodio.SharedViewModel;
+import com.example.moodio.SharedViewModelFactory;
+import com.example.moodio.tests.activities.LiveCameraActivity;
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -62,7 +46,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.BufferedSink;
 
 
 public class AnalyzeEmotionActivity extends AppCompatActivity {
@@ -88,7 +71,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analyze_emotion);
         getWindow().setStatusBarColor(Color.BLACK);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         checkForPermission();
         sharedViewModel = SharedViewModelFactory.getInstance();
         cameraFloatingActionButton=findViewById(R.id.cameraFloatingActionButton);
@@ -105,7 +88,7 @@ public class AnalyzeEmotionActivity extends AppCompatActivity {
         buttonList.add(cameraFloatingActionButton);
         buttonList.add(galleryFloatingActionButton);
         buttonList.add(liveStreamFloatingActionButton);
-        imageView=findViewById(R.id.choosenImageView);
+        imageView=findViewById(R.id.chosenImageView);
         imageUri=createUri();
         buttonAnimation();
         registerPictureCameraLauncher();
@@ -122,7 +105,7 @@ private Uri createUri(){
         imageFile=new File(getApplicationContext().getFilesDir(),"camera_photo.jpg");
         return FileProvider.getUriForFile(
                 getApplicationContext(),
-                "com.example.emlody.fileProvider", imageFile
+                "com.example.moodio.fileProvider", imageFile
         );
 }
 
@@ -144,10 +127,12 @@ private void registerPictureCameraLauncher(){
 }
 private void registerPictureGalleryLauncher(){
     imageLauncher =registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
-        String path=RealPathUtil.getRealPath(AnalyzeEmotionActivity.this,result);
-        reorderUi(result);
-        imageFile=new File(path);
-        selectFromGallery();
+        if(null != result){
+            String path=RealPathUtil.getRealPath(AnalyzeEmotionActivity.this,result);
+            reorderUi(result);
+            imageFile=new File(path);
+            selectFromGallery();
+        }
     });
 }
 private void reorderUi(Uri imageUri){

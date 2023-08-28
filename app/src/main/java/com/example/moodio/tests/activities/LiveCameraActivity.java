@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
@@ -30,12 +31,20 @@ import android.util.Log;
 import android.util.Size;
 import android.util.SparseArray;
 import android.view.Surface;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.moodio.Activities.PlaylistsActivity;
+import com.example.moodio.Activities.SpotifyActivity;
+import com.example.moodio.PlayListAdapter;
+import com.example.moodio.PlaylistInfo;
 import com.example.moodio.R;
+import com.example.moodio.Utils.Playlist;
 import com.example.moodio.Utils.ResponseServer;
 import com.example.moodio.tests.utils.CameraConnectionFragment;
 import com.example.moodio.tests.utils.ImageUtils;
@@ -50,8 +59,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -92,7 +104,11 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         webSettings.setUseWideViewPort(true);
         boomboxWebView.loadUrl(GIF_URL);
 
-        //authenticateUser();
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        playlistsArray = new ArrayList<>();
+        playListsListView = findViewById(R.id.listView);
+        playListAdapter = new PlayListAdapter(this,R.layout.list_row,playlistsArray);
+        playListsListView.setAdapter(playListAdapter);
 
         //TODO ask for camera permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -474,7 +490,8 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                                 Gson gson = new Gson(); // Or use new GsonBuilder().create();
                                 ResponseServer serverResponse = gson.fromJson(responseBody, ResponseServer.class);
                                 if (response.code() == 200) {
-                                    mSpotifyManager.playPlaylist(serverResponse.getDefaultMixName(), serverResponse.getDefaultPlaylistUrl(), serverResponse.getEmotion());
+                                    addPlaylists(serverResponse);
+                                    mSpotifyManager.playPlaylist(serverResponse.getDefaultMixName(), serverResponse.getDefaultPlaylistUrl(), serverResponse.getEmotion(), false);
                                     Log.d("LiveCameraActivity", "Retrieved playlist");
 
                                 } else if (response.code() == 204) {
@@ -508,5 +525,37 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
             }
             buffer.get(yuvBytes[i]);
         }
+    }
+
+    private ListView playListsListView;
+    private PlayListAdapter playListAdapter;
+    private ArrayList<PlaylistInfo> playlistsArray;
+    private void addPlaylists(ResponseServer res){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                playlistsArray.clear();
+                playListAdapter.clear();
+                playListAdapter.notifyDataSetChanged();
+
+                for (Map.Entry<String, Playlist> entry: res.getPlaylistsUrls().entrySet()) {
+                    PlaylistInfo playlist = new PlaylistInfo(entry.getValue().getImageUrl(),entry.getKey(),entry.getValue().getPlaylistUrl());
+                    playlistsArray.add(playlist);
+                    playListsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String playlistUrl = playListAdapter.getPlaylistUrl(position);
+                            String playlistName = playListAdapter.getPlaylistName(position);
+                            playlistName = playlistName.replace("Mix", "");
+                            mSpotifyManager.playPlaylist(playlistName, playlistUrl, res.getEmotion(), true);
+                        }
+                    });
+
+                }
+
+                playListAdapter.notifyDataSetChanged();
+            }
+        });
+
     }
 }

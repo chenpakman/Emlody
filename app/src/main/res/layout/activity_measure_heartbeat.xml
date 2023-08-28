@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="404dp"
         android:layout_height="105dp"
-        android:text="Please place your finger on the fingerprint image and keep it there until the measurement is complete.\n Keep your finger steady for accurate results."
+        android:text="@string/heart_beat_measurement_title"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"

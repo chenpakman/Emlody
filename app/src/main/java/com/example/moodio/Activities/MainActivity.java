@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void generatePlaylistButtonClicked(View view){
         Intent intent=new Intent(MainActivity.this, AnalyzeEmotionActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 }

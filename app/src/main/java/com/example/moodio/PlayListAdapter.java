@@ -29,6 +29,11 @@ private int mResource;
 
     }
 
+    public String getPlaylistName(int position){
+        return getItem(position).getPlaylistName();
+
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

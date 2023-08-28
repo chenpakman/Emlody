@@ -77,22 +77,35 @@ public class SpotifyManager {
 
     }
 
-    public void playPlaylist(String mixName, String playlistURL, String detectedEmotion) {
+    public void playPlaylist(String mixName, String playlistURL, String detectedEmotion, boolean isRelative) {
 
         try{
-            if(!Objects.equals(currentEmotion, detectedEmotion)){
+            if(isRelative){
+                getPlaylistURLAndPlay(mixName, playlistURL);
+            }
+            else if(!Objects.equals(currentEmotion, detectedEmotion)){
                 currentEmotion = detectedEmotion;
-                URL url = new URL(playlistURL);
-                String playlistUri = url.getPath();
-                playlistUri = playlistUri.replace("/",":");
-                Log.d("SpotifyManager", "About to play " + playlistUri);
-                connected(playlistUri);
-                mContext.updateTitle(mixName);
+                getPlaylistURLAndPlay(mixName, playlistURL);
             }
 
         } catch (MalformedURLException e) {
             Log.e("SpotifyManager", "Couldn't form a URL " + e.getMessage(), e);
         }
+    }
+
+    private void getPlaylistURLAndPlay(String mixName, String playlistURL) throws MalformedURLException {
+        String playlistUri = getPlaylistURL(playlistURL);
+        Log.d("SpotifyManager", "About to play " + playlistUri);
+        connected(playlistUri);
+        mContext.updateTitle(mixName);
+    }
+
+    @NonNull
+    private String getPlaylistURL(String playlistURL) throws MalformedURLException {
+        URL url = new URL(playlistURL);
+        String playlistUri = url.getPath();
+        playlistUri = playlistUri.replace("/",":");
+        return playlistUri;
     }
 
     private void connected(String playlistUri) {

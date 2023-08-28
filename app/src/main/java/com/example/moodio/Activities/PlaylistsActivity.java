@@ -41,8 +41,9 @@ public class PlaylistsActivity extends AppCompatActivity {
         String playlistsJson = getIntent().getStringExtra("EXTRA_MESSAGE");
         Gson gson = new Gson();
         ResponseServer res = gson.fromJson(playlistsJson, ResponseServer.class);
-        TextView title =findViewById(R.id.playlistTitle);
-        title.setText("It seems you are feeling "+ res.getEmotion().toLowerCase(Locale.ROOT)+".\n So here are your playlists:\n");
+        TextView title = findViewById(R.id.playlistTitle);
+        String titleText = getString(R.string.playlists_title, res.getEmotion());
+        title.setText(titleText);
         playListAdapter=new PlayListAdapter(this,R.layout.list_row,playlistsArray);
         playListsListView.setAdapter(playListAdapter);
 
@@ -72,6 +73,12 @@ private void addPlaylists(ResponseServer res){
     playListAdapter.notifyDataSetChanged();
 }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, AnalyzeEmotionActivity.class);
+        startActivity(intent);
+        finish(); // Optional, to remove the current activity from the stack
+    }
 
 
 
