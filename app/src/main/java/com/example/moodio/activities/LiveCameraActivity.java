@@ -243,16 +243,15 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         String frontCameraId = null;
         try {
             CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-            frontCameraId = cameraManager.getCameraIdList()[0];
 
-            /*for (String cameraId : cameraManager.getCameraIdList()) {
+            for (String cameraId : cameraManager.getCameraIdList()) {
                 CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
                 Integer lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 if (lensFacing != null && lensFacing == CameraCharacteristics.LENS_FACING_FRONT) {
                     frontCameraId = cameraId;
                     break;
                 }
-            }*/
+            }
 
 
             // If no front camera is found, use the default back camera
