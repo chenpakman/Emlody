@@ -189,5 +189,3 @@ public class MeasureHeartbeatActivity extends AppCompatActivity {
         finish(); // Optional, to remove the current activity from the stack
     }
 }
-
-}
