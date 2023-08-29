@@ -182,4 +182,12 @@ public class MeasureHeartbeatActivity extends AppCompatActivity {
                     }}  );
     }
 
+        @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, AnalyzeEmotionActivity.class);
+        startActivity(intent);
+        finish(); // Optional, to remove the current activity from the stack
+    }
+}
+
 }
