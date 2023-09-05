@@ -30,8 +30,8 @@ import okio.BufferedSink;
 
 public class SpotifyManager {
 
-    private static final String CLIENT_ID = "";
-    private static final String REDIRECT_URI = "";
+    private static final String CLIENT_ID = "a7bff5059afb4b969966df56c651f6e8";
+    private static final String REDIRECT_URI = "https://www.google.com";
     private SpotifyAppRemote mSpotifyAppRemote;
 
     private LiveCameraActivity mContext;
@@ -127,7 +127,8 @@ public class SpotifyManager {
 
         Request request = new Request.Builder()
                 //.url("http://3.70.133.202:8080/app?emotions=" + emotion)
-                .url("http://192.168.1.218:9000/app?emotions=" + emotion)
+               // .url("http://192.168.1.218:9000/app?emotions=" + emotion)
+                .url("http://192.168.1.35:9000/app?emotions=" + emotion)
                 .put(new RequestBody() {
                     @Override
                     public MediaType contentType() {

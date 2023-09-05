@@ -135,8 +135,8 @@ public class MeasureHeartbeatActivity extends AppCompatActivity {
 
         Request request = new Request.Builder()
                 //.url("http://3.70.133.202:8080/app?emotions=" + emotions)
-                //.url("http://192.168.1.35:8080/app?emotions=" + emotions)
-                .url("http://192.168.1.218:9000/app?emotions=" + emotions)
+                .url("http://192.168.1.35:8080/app?emotions=" + emotions)
+                //.url("http://192.168.1.218:9000/app?emotions=" + emotions)
 
                 .put(new RequestBody() {
                     @Override

@@ -43,34 +43,37 @@ public class PlaylistsActivity extends AppCompatActivity {
         TextView title = findViewById(R.id.playlistTitle);
         String titleText = getString(R.string.playlists_title, res.getEmotion());
         title.setText(titleText);
+        TextView heartbeatRes = findViewById(R.id.heartbeatRes);
+        String heartbeatText = getString(R.string.heart_beat_result,res.getHeartbeat());
+        heartbeatRes.setText(heartbeatText);
         playListAdapter=new PlayListAdapter(this,R.layout.list_row,playlistsArray);
         playListsListView.setAdapter(playListAdapter);
 
         addPlaylists(res);
 
     }
-private void addPlaylists(ResponseServer res){
-    playlistsArray.clear();
-    playListAdapter.clear();
-    playListAdapter.notifyDataSetChanged();
+    private void addPlaylists(ResponseServer res){
+        playlistsArray.clear();
+        playListAdapter.clear();
+        playListAdapter.notifyDataSetChanged();
 
-    for (Map.Entry<String, Playlist> entry: res.getPlaylistsUrls().entrySet()) {
-        PlaylistInfo playlist=new PlaylistInfo(entry.getValue().getImageUrl(),entry.getKey(),entry.getValue().getPlaylistUrl());
-        playlistsArray.add(playlist);
-        playListsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String playlistUrl=playListAdapter.getPlaylistUrl(position);
-                Intent intent = new Intent(PlaylistsActivity.this, SpotifyActivity.class);
-                intent.putExtra("EXTRA_MESSAGE", playlistUrl);
-                startActivity(intent);
-            }
-        });
+        for (Map.Entry<String, Playlist> entry: res.getPlaylistsUrls().entrySet()) {
+            PlaylistInfo playlist=new PlaylistInfo(entry.getValue().getImageUrl(),entry.getKey(),entry.getValue().getPlaylistUrl());
+            playlistsArray.add(playlist);
+            playListsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String playlistUrl=playListAdapter.getPlaylistUrl(position);
+                    Intent intent = new Intent(PlaylistsActivity.this, SpotifyActivity.class);
+                    intent.putExtra("EXTRA_MESSAGE", playlistUrl);
+                    startActivity(intent);
+                }
+            });
 
+        }
+
+        playListAdapter.notifyDataSetChanged();
     }
-
-    playListAdapter.notifyDataSetChanged();
-}
 
     @Override
     public void onBackPressed() {
