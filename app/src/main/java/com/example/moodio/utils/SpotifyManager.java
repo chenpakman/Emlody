@@ -1,8 +1,10 @@
 package com.example.moodio.utils;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.example.moodio.R;
 import com.example.moodio.utils.ResponseServer;
 import com.example.moodio.activities.LiveCameraActivity;
 import com.google.gson.Gson;
@@ -161,6 +163,7 @@ public class SpotifyManager {
                         Log.d("SpotifyManager", "Retrieved spotify link: " + DEFAULT_PLAYLIST);
                         connected(DEFAULT_PLAYLIST);
                         mContext.updateTitle(DEFAULT_EMOTION);
+
 
                     }
                     response.close();
