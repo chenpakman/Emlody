@@ -1,8 +1,10 @@
 package com.example.moodio.utils;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.example.moodio.R;
 import com.example.moodio.utils.ResponseServer;
 import com.example.moodio.activities.LiveCameraActivity;
 import com.google.gson.Gson;
@@ -30,8 +32,8 @@ import okio.BufferedSink;
 
 public class SpotifyManager {
 
-    private static final String CLIENT_ID = "";
-    private static final String REDIRECT_URI = "";
+    private static final String CLIENT_ID = "a7bff5059afb4b969966df56c651f6e8";
+    private static final String REDIRECT_URI = "https://www.google.com";
     private SpotifyAppRemote mSpotifyAppRemote;
 
     private LiveCameraActivity mContext;
@@ -127,7 +129,8 @@ public class SpotifyManager {
 
         Request request = new Request.Builder()
                 //.url("http://3.70.133.202:8080/app?emotions=" + emotion)
-                .url("http://192.168.1.218:9000/app?emotions=" + emotion)
+               // .url("http://192.168.1.218:9000/app?emotions=" + emotion)
+                .url("http://192.168.1.35:9000/app?emotions=" + emotion)
                 .put(new RequestBody() {
                     @Override
                     public MediaType contentType() {
@@ -160,6 +163,7 @@ public class SpotifyManager {
                         Log.d("SpotifyManager", "Retrieved spotify link: " + DEFAULT_PLAYLIST);
                         connected(DEFAULT_PLAYLIST);
                         mContext.updateTitle(DEFAULT_EMOTION);
+
 
                     }
                     response.close();

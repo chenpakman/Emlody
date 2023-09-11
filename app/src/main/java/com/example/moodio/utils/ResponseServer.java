@@ -11,6 +11,15 @@ public class ResponseServer {
    private String imageUrl;
 
    private String defaultMixName;
+    private float heartbeat;
+
+    public float getHeartbeat() {
+        return heartbeat;
+    }
+
+    public void setHeartbeat(float heartbeat) {
+        this.heartbeat = heartbeat;
+    }
 
     public void setEmotion(String emotion) {
         this.emotion = emotion;

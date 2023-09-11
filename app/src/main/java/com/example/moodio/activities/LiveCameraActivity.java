@@ -93,6 +93,7 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         title = findViewById(R.id.titleTextView);
         mSpotifyManager = new SpotifyManager(this);
 
+
         boomboxWebView = findViewById(R.id.boomboxWebView);
         WebSettings webSettings = boomboxWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -467,7 +468,8 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                     .build();
             Request request = new Request.Builder()
                     //.url("http://3.70.133.202:8080/app")
-                    .url("http://192.168.1.218:9000/app")
+                    //.url("http://192.168.1.218:9000/app")
+                    .url("http://192.168.1.35:9000/app")
                     .post(requestBody)
                     .build();
             okHttpClient.newCall(request)
@@ -488,6 +490,8 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                                     addPlaylists(serverResponse);
                                     mSpotifyManager.playPlaylist(serverResponse.getDefaultMixName(), serverResponse.getDefaultPlaylistUrl(), serverResponse.getEmotion(), false);
                                     Log.d("LiveCameraActivity", "Retrieved playlist");
+                                    updateHeartbeat((int) serverResponse.getHeartbeat());
+
 
                                 } else if (response.code() == 204) {
                                     Log.e("LiveCameraActivity", "didn't get a playlist, response code: " + response.code());
@@ -507,7 +511,11 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         isUploadingImage = false;
     }
 
-
+private void updateHeartbeat(int heartbeat){
+    TextView heartbeatRes = findViewById(R.id.heartbeatRes);
+    String heartbeatText = getString(R.string.heart_beat_result,heartbeat);
+    heartbeatRes.setText(heartbeatText);
+}
 
 
     protected void fillBytes(final Image.Plane[] planes, final byte[][] yuvBytes) {
