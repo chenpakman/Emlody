@@ -107,17 +107,14 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         playListAdapter = new PlayListAdapter(this,R.layout.list_row,playlistsArray);
         playListsListView.setAdapter(playListAdapter);
 
-        //TODO ask for camera permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ) {
                 ActivityCompat.requestPermissions(this, new String[]{
                         android.Manifest.permission.CAMERA}, 121);
             }else{
-                //TODO show live camera footage
                 setFragment();
             }
         } else {
-            //TODO show live camera footage
             setFragment();
         }
     }
@@ -140,19 +137,6 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
         mSpotifyManager.disconnect();
 
     }
-
-/*
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mSpotifyManager.stopMusic();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mSpotifyManager.resumeMusic();
-    }*/
 
 
     @Override
@@ -178,7 +162,6 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
 
     }
 
-    //TODO fragment which show llive footage from camera
     int previewHeight = 0, previewWidth = 0;
 
     private static final String CHANNEL_ID = "camera_channel_id";
@@ -188,8 +171,6 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
     protected void setFragment(){
         String cameraId = null;
 
-        /*CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        cameraId = cameraManager.getCameraIdList()[0];*/
         cameraId = findFrontCameraId();
 
 
@@ -255,11 +236,6 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                 }
             }
 
-
-            // If no front camera is found, use the default back camera
-            /*if(frontCameraId == null){
-                frontCameraId = cameraManager.getCameraIdList()[0];
-            }*/
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -391,9 +367,7 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
                 });
 
                 // Before compressing the image
-                //Bitmap originalBitmap = BitmapFactory.decodeFile("path_to_original_image");
                 Matrix matrix = new Matrix();
-                //matrix.postRotate(getImageOrientation("path_to_original_image"));
                 matrix.postRotate(sensorOrientation);
 
                 // Rotate the image if needed
@@ -469,7 +443,7 @@ public class LiveCameraActivity extends AppCompatActivity implements ImageReader
             Request request = new Request.Builder()
                     //.url("http://3.70.133.202:8080/app")
                     //.url("http://192.168.1.218:9000/app")
-                    .url("http://192.168.1.35:9000/app")
+                    .url("http://3.70.133.202:8080/app")
                     .post(requestBody)
                     .build();
             okHttpClient.newCall(request)

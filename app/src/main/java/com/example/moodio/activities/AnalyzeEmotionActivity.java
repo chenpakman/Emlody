@@ -205,7 +205,7 @@ private void checkCameraPermissionsAndOpenCamera(){
     Request request = new Request.Builder()
             //.url("http://3.70.133.202:8080/app")
           //  .url("http://192.168.1.218:9000/app")
-            .url("http://192.168.1.35:9000/app")
+            .url("http://3.70.133.202:8080/app")
             .post(requestBody)
             .build();
     okHttpClient.newCall(request)
@@ -258,60 +258,7 @@ private void buttonAnimation(){
         b.animate().alpha(1f).translationYBy(-1000).setDuration(1500);
     }
 }
-    /*public void requestPlayLists(String emotions) {
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .build();
-
-        Request request = new Request.Builder()
-                //.url("http://3.70.133.202:8080/app?emotions=" + emotions)
-                .url("http://192.168.1.218:9000/app?emotions=" + emotions)
-                .put(new RequestBody() {
-                    @Override
-                    public MediaType contentType() {
-                        return null;
-                    }
-
-                    @Override
-                    public void writeTo(BufferedSink sink) throws IOException {
-
-                    }
-                })
-                .build();
-        okHttpClient.newCall(request)
-                .enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NonNull final Call call, @NonNull IOException e) {
-                        runOnUiThread(() -> {
-                            Toast.makeText(AnalyzeEmotionActivity.this, "Something went wrong, please try again." + e.getMessage(), Toast.LENGTH_LONG).show();
-
-                        });
-                    }
-                    @Override
-                    public void onResponse(@NonNull Call call, final Response response) throws IOException {
-                        if(response.body()!=null){
-                            String url = response.body().string();
-                            if (response.code() == 200) {
-                                runOnUiThread(() -> {
-                                    Intent intent = new Intent(AnalyzeEmotionActivity.this, PlaylistsActivity.class);
-                                    intent.putExtra("EXTRA_MESSAGE", url);
-                                    startActivity(intent);
-                                });
-                            }
-                            else{
-                                Gson gson = new Gson(); // Or use new GsonBuilder().create();
-                                ResponseServer serverResponse = gson.fromJson(url, ResponseServer.class);
-                                runOnUiThread(() -> {
-                                    Toast.makeText(AnalyzeEmotionActivity.this, serverResponse.getError(), Toast.LENGTH_LONG).show();
-                                });
-                            }
-                        }
-                }}  );
-    }
-*/
     }
 
 
