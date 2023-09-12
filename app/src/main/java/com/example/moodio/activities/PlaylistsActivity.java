@@ -44,7 +44,7 @@ public class PlaylistsActivity extends AppCompatActivity {
         String titleText = getString(R.string.playlists_title, res.getEmotion());
         title.setText(titleText);
         TextView heartbeatRes = findViewById(R.id.heartbeatRes);
-        String heartbeatText = getString(R.string.heart_beat_result,res.getHeartbeat());
+        String heartbeatText = getString(R.string.heart_beat_result,(int)res.getHeartbeat());
         heartbeatRes.setText(heartbeatText);
         playListAdapter=new PlayListAdapter(this,R.layout.list_row,playlistsArray);
         playListsListView.setAdapter(playListAdapter);
@@ -79,7 +79,7 @@ public class PlaylistsActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent(this, AnalyzeEmotionActivity.class);
         startActivity(intent);
-        finish(); // Optional, to remove the current activity from the stack
+        finish();
     }
 
 

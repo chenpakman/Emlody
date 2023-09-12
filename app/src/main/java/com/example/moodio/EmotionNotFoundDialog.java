@@ -26,8 +26,6 @@ public class EmotionNotFoundDialog extends Dialog implements View.OnClickListene
     private Dialog dialog;
     private TextView tellText, goBackText, doneText;
 
-    //private ChooseEmotionsDialog emotionsDialog;
-
     String[] emotions = {"Happy", "Sad", "Angry", "Exited", "Nervous", "Fear"};
 
     ArrayAdapter<String> adapter;
